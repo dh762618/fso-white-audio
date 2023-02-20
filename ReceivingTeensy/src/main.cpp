@@ -1,8 +1,11 @@
 #include <Audio.h>
-#include <Wire.h>
 #include <SPI.h>
 #include <SD.h>
 #include <SerialFlash.h>
+#include <../include/LiquidCrystal_I2C.h>
+
+// Set up LCD
+LiquidCrystal_I2C lcd(0x27, 16 ,2);
 
 // GUItool: begin automatically generated code
 AsyncAudioInputSPDIF3    spdifIn(false, false, 100, 20, 80);   //xy=307,222
@@ -22,6 +25,12 @@ void setup() {
   amp1.gain(1);
   amp2.gain(1);
   Serial.begin(57600);
+  lcd.init();
+  lcd.setCursor(0,0);
+  lcd.backlight();
+  lcd.print("Hello World!");
+  delay(500);
+  lcd.blink();
   while (!Serial);
 
 }
