@@ -9,7 +9,7 @@ LiquidCrystal_I2C lcd(0x27, 16 ,2);
 
 // Teensy Audio Library
 // GUItool: begin automatically generated code
-AsyncAudioInputSPDIF3    spdifIn;   //xy=307,222
+AsyncAudioInputSPDIF3    spdifIn(false, false, 100, 20, 80);   //xy=307,222
 AudioAmplifier           amp2;           //xy=473,247
 AudioAmplifier           amp1;           //xy=477,211
 AudioOutputPT8211        i2s1;           //xy=740,223
@@ -113,10 +113,13 @@ void OutputLCD(double voltage, double vol);
 
 void setup() {
   AudioMemory(12);
-  amp1.gain(5);
-  amp2.gain(5);
+  amp1.gain(1);
+  amp2.gain(1);
   Serial.begin(57600);
   pinMode(PIN_A12, INPUT);
+  pinMode(34, INPUT_PULLDOWN);
+  pinMode(33, INPUT_PULLDOWN);
+  delayMicroseconds(10);
   // Make custom characters
   lcd.init();
   lcd.createChar(0, zero);
@@ -150,7 +153,26 @@ void loop() {
   double volRead = 0;
   volRead = analogRead(A12);
   double volume = (volRead / 1023.0) * 10;
-  OutputLCD(voltage, 10);
+  lcd.setCursor(0,0);
+  int val = digitalRead(33);
+  int val2 = digitalRead(34);
+  Serial.print("Val1: ");
+  Serial.println(val);
+  Serial.print("Val2: ");
+  Serial.println(val2);
+  if (val == HIGH){
+    amp1.gain(0);
+    volume = 0;
+  }
+  else if (val2 == HIGH){
+    amp1.gain(1);
+    volume = 10;
+  }
+  else{
+    amp1.gain(1);
+    volume = 10;
+  }
+  OutputLCD(voltage, volume);
 
   delay(250);
 }
@@ -177,6 +199,7 @@ void OutputLCD(double voltage, double volume){
   //      lcd.write(0);
   //     }
   //   } 
+
   lcd.setCursor(15, 0);
   double inputFreq = spdifIn.getInputFrequency();
   if (inputFreq > 43000){
@@ -187,7 +210,7 @@ void OutputLCD(double voltage, double volume){
   lcd.setCursor(0, 1);
   lcd.write(6);
   lcd.print(int(volume));
-  lcd.setCursor(9, 1);
-  lcd.print("V: ");
+  lcd.setCursor(10, 1);
   lcd.print(voltage);
+  lcd.print(" V");
 }
