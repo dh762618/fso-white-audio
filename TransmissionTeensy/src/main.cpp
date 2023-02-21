@@ -40,7 +40,8 @@ void setup() {
   sgtl5000_1.enable();
   sgtl5000_1.inputSelect(myInput);
   sgtl5000_1.volume(0.7);
-  amp1.gain(2);
+  int gain = 0;
+  amp1.gain(gain);
   biquad1.setLowpass(0, 8900, 0.707);
 }
 
