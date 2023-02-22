@@ -1,3 +1,13 @@
+/*
+ * Receiving Teensy
+ * 
+ * A simple hardware test which receives the signal via photodetector.
+ * Signal strength from detector is displayed on LCD.
+ * Signal is output through the DAC.
+ *
+ * This example code is in the public domain.
+ */
+
 #include <Audio.h>
 #include <SPI.h>
 #include <SD.h>

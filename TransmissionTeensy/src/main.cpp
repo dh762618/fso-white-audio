@@ -1,4 +1,6 @@
 /*
+ * Transmission Teensy
+ * 
  * A simple hardware test which receives audio from the audio shield
  * Line-In pins and send it to the Line-Out pins and headphone jack.
  *
@@ -36,12 +38,15 @@ void setup() {
   // Audio connections require memory to work.  For more
   // detailed information, see the MemoryAndCpuUsage example
   AudioMemory(12);
+
   // Enable the audio shield, select input, and enable output
   sgtl5000_1.enable();
   sgtl5000_1.inputSelect(myInput);
   sgtl5000_1.volume(0.7);
   int gain = 1;
   amp1.gain(gain);
+  
+  //implement filter
   biquad1.setLowpass(0, 8900, 0.707);
 }
 
