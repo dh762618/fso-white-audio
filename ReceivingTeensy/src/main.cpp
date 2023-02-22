@@ -114,7 +114,7 @@ void OutputLCD(double voltage, double vol);
 
 void setup() {
   AudioMemory(12);
-  amp1.gain(1);
+  amp1.gain(2);
   amp2.gain(1);
   Serial.begin(57600);
   pinMode(PIN_A16, OUTPUT);
