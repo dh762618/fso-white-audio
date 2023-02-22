@@ -16,10 +16,11 @@ AudioOutputPT8211        i2s1;           //xy=740,223
 AudioConnection          patchCord1(spdifIn, 0, amp1, 0);
 AudioConnection          patchCord2(spdifIn, 1, amp2, 0);
 AudioConnection          patchCord3(amp2, 0, i2s1, 1);
-AudioConnection          patchCord4(amp1, 0, i2s1, 0);
-AudioControlSGTL5000     sgtl5000_1;     //xy=106,226
+AudioConnection          patchCord4(amp1, 0, i2s1, 0);   //xy=106,226
 // GUItool: end automatically generated code
 
+// Global Variables
+double vol = 1.0;
 
 // LCD Character Declarations
 byte zero[] = {
@@ -116,7 +117,8 @@ void setup() {
   amp1.gain(1);
   amp2.gain(1);
   Serial.begin(57600);
-  pinMode(PIN_A12, INPUT);
+  pinMode(PIN_A16, OUTPUT);
+  pinMode(PIN_A13, INPUT);
   pinMode(34, INPUT_PULLDOWN);
   pinMode(33, INPUT_PULLDOWN);
   delayMicroseconds(10);
@@ -149,28 +151,22 @@ void loop() {
   reading = analogRead(A13);
   double voltage = reading / 1023.0;
   // Check Volume
+  analogWrite(PIN_A16, 3.3);
   analogReadResolution(12);
   double volRead = 0;
-  volRead = analogRead(A12);
+  volRead = 1;
   double volume = (volRead / 1023.0) * 10;
   lcd.setCursor(0,0);
   int val = digitalRead(33);
-  int val2 = digitalRead(34);
   Serial.print("Val1: ");
   Serial.println(val);
-  Serial.print("Val2: ");
-  Serial.println(val2);
   if (val == HIGH){
     amp1.gain(0);
     volume = 0;
   }
-  else if (val2 == HIGH){
-    amp1.gain(1);
-    volume = 10;
-  }
   else{
     amp1.gain(1);
-    volume = 10;
+    volume = vol;
   }
   OutputLCD(voltage, volume);
 
@@ -178,28 +174,6 @@ void loop() {
 }
 
 void OutputLCD(double voltage, double volume){
-  // double count = 1.4;
-  // double factor = voltage/count;
-  // int percent = (voltage+1)/factor;
-  // int number = percent / 5;
-  // int remainder = percent % 5;
-  // if (number > 0){
-  //     for(int j = 0; j < number; j++)
-  //     {
-  //       lcd.setCursor(j, 0);
-  //       lcd.write(5);
-  //     }
-  // }
-  // lcd.setCursor(number,0);
-  // lcd.write(remainder); 
-  // if(number < 16)	
-  //   {
-  //     for(int j = number+1; j <= 16; j++){ 
-  //       lcd.setCursor(j, 0);
-  //      lcd.write(0);
-  //     }
-  //   } 
-
   lcd.setCursor(15, 0);
   double inputFreq = spdifIn.getInputFrequency();
   if (inputFreq > 43000){
