@@ -33,68 +33,26 @@ AudioConnection          patchCord4(amp1, 0, i2s1, 0);   //xy=106,226
 double vol = 1.0;
 
 // LCD Character Declarations
-byte zero[] = {
+byte muted[] = {
   B00000,
-  B00000,
-  B00000,
-  B00000,
-  B00000,
-  B00000,
+  B10001,
+  B01010,
+  B00100,
+  B01010,
+  B10001,
   B00000,
   B00000
 };
-byte one[] = {
-  B10000,
-  B10000,
-  B10000,
-  B10000,
-  B10000,
-  B10000,
-  B10000,
-  B10000
-};
-byte two[] = {
-  B11000,
-  B11000,
-  B11000,
-  B11000,
-  B11000,
-  B11000,
-  B11000,
-  B11000
-};
 
-byte three[] = {
-  B11100,
-  B11100,
-  B11100,
-  B11100,
-  B11100,
-  B11100,
-  B11100,
-  B11100
-};
-
-byte four[] = {
-  B11110,
-  B11110,
-  B11110,
-  B11110,
-  B11110,
-  B11110,
-  B11110,
-  B11110
-};
-
-byte five[] = {
-  B11111,
-  B11111,
-  B11111,
-  B11111,
-  B11111,
-  B11111,
-  B11111,
-  B11111
+byte unmuted[] = {
+  B00010,
+  B01001,
+  B00101,
+  B00101,
+  B00101,
+  B01001,
+  B00010,
+  B00000
 };
 
 byte volume[] = {
@@ -119,34 +77,33 @@ byte receiving[] = {
   B11111,
   B11111
 };
+// End LCD Custom Characters
 
 void OutputLCD(double voltage, double vol);
+double CheckVolume();
 
 void setup() {
   AudioMemory(12);
-  amp1.gain(2);
+  // Setting default gains
+  amp1.gain(1);
   amp2.gain(1);
+  // Initializing Serial connection for debugging
   Serial.begin(57600);
-  pinMode(PIN_A16, OUTPUT);
-  pinMode(PIN_A13, INPUT);
-  pinMode(34, INPUT_PULLDOWN);
-  pinMode(33, INPUT_PULLDOWN);
+  pinMode(PIN_A13, INPUT); // Signal Read pin
+  pinMode(33, INPUT_PULLDOWN); // Mute switch reading pin
+  pinMode(PIN_A16, INPUT); // Volume reading pin
   delayMicroseconds(10);
   // Make custom characters
   lcd.init();
-  lcd.createChar(0, zero);
-  lcd.createChar(1, one);
-  lcd.createChar(2, two);
-  lcd.createChar(3, three);
-  lcd.createChar(4, four);
-  lcd.createChar(5, five);
+  lcd.createChar(0, muted);
+  lcd.createChar(1, unmuted);
   lcd.createChar(6, volume);
   lcd.createChar(7, receiving);
 
   // Splash Screen
   lcd.backlight();
   lcd.setCursor(0,0);
-  lcd.print("Voltage Test");
+  lcd.print("Receiving Teensy");
   lcd.setCursor(0,1);
   lcd.print("FSO White");
   delay(1000);
@@ -160,27 +117,39 @@ void loop() {
   double reading = 0;
   reading = analogRead(A13);
   double voltage = reading / 1023.0;
-  // Check Volume
-  analogWrite(PIN_A16, 3.3);
-  analogReadResolution(12);
-  double volRead = 0;
-  volRead = 1;
-  double volume = (volRead / 1023.0) * 10;
-  lcd.setCursor(0,0);
-  int val = digitalRead(33);
-  Serial.print("Val1: ");
-  Serial.println(val);
-  if (val == HIGH){
-    amp1.gain(0);
-    volume = 0;
-  }
-  else{
-    amp1.gain(1);
-    volume = vol;
-  }
+  // Check the volume potentiometer for volume level
+  double volume = CheckVolume();
+  // Doing to LCD Update
   OutputLCD(voltage, volume);
 
   delay(250);
+}
+
+double CheckVolume(){
+  // Check Volume
+  analogReadResolution(12);
+  double volRead = analogRead(PIN_A16);
+  vol = (volRead / 1023.0) * 2.3;
+  double volume = floor(vol);
+  Serial.print("Volume Reading: ");
+  Serial.println(vol);
+  lcd.setCursor(0,0);
+  int val = digitalRead(33);
+  Serial.print("Mute: ");
+  Serial.println(val);
+  if (val == HIGH || volume == 0){
+    amp1.gain(0);
+    amp2.gain(0);
+    volume = 0;
+  }
+  else{
+    double actualGain = vol / 5;
+    Serial.print("Actual Gain Adj: ");
+    Serial.println(actualGain);
+    amp1.gain(vol);
+    amp2.gain(vol);
+  }
+  return volume;
 }
 
 void OutputLCD(double voltage, double volume){
@@ -193,7 +162,12 @@ void OutputLCD(double voltage, double volume){
   }
   lcd.setCursor(0, 1);
   lcd.write(6);
-  lcd.print(int(volume));
+  if (volume == 0){
+    lcd.write(0);
+  } else{
+    lcd.write(1);
+  }
+  lcd.print(int(floor(vol)));
   lcd.setCursor(10, 1);
   lcd.print(voltage);
   lcd.print(" V");
