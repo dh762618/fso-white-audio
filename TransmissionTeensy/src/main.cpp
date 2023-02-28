@@ -12,14 +12,24 @@
 #include <Wire.h>
 #include <SPI.h>
 #include <SerialFlash.h>
-//#include <../include/LiquidCrystal_I2C.h>
+#include <../include/LiquidCrystal_I2C.h>
+#include "Adafruit_seesaw.h"
+#include <seesaw_neopixel.h>
+
+#define  DEFAULT_I2C_ADDR 0x30
+#define  ANALOGIN   18
+#define  NEOPIXELOUT 14
 
 // Global Vars
 // double voltage = 0;
 // int loopCounter = 0; //Counts how many times the loop is entered - used to slow down the voltage reading
 
+// Declaring the constructor for the NeoSlider gain
+Adafruit_seesaw seesaw;
+seesaw_NeoPixel pixels = seesaw_NeoPixel(4, NEOPIXELOUT, NEO_GRB + NEO_KHZ800);
+
 // Set up LCD
-// LiquidCrystal_I2C lcd(0x27, 16 ,2);
+LiquidCrystal_I2C lcd(0x27, 16 ,2);
 
 // From Teensy Audio Library
 // GUItool: begin automatically generated code4
@@ -41,13 +51,27 @@ AudioControlSGTL5000     sgtl5000_1;     //xy=302,184
 
 // LCD Character Declarations
 // output signal level
+byte output[] = {
+  B00000,
+  B00100,
+  B00110,
+  B11111,
+  B00110,
+  B00100,
+  B00000,
+  B00000
+};
 // possibly touch buttons for sound effects
 
+//choose input between 3.5mm and mic?
 const int myInput = AUDIO_INPUT_LINEIN;
 //const int myInput = AUDIO_INPUT_MIC;
 
 // Declare LCDOutput
-// void LCDOutput(double voltage);
+void LCDOutput(double display_gain);
+
+//declare neoslider
+uint32_t Wheel(byte WheelPos);
 
 
 void setup() {
@@ -59,25 +83,75 @@ void setup() {
   sgtl5000_1.enable();
   sgtl5000_1.inputSelect(myInput);
   sgtl5000_1.volume(0.7);
+  
+  //set default gain
   int gain = 1;
   amp1.gain(gain);
   
   // Implement filter
-  biquad1.setLowpass(0, 8900, 0.707);
+  biquad1.setLowpass(0, 5000, 0.707);
 
   // Implement characters to be displayed on LCD Screen
-  // lcd.init();
-  // lcd.createChar();
+  lcd.init();
+  lcd.createChar(0, output);
 
-  // Create LCD Splash Screen
-  // lcd.backlight();
-  // lcd.setCursor(0,0);
-  // lcd.print("Transmitting Teensy");
-  // lcd.setCursor(0,1);
-  // lcd.print("FSO White");
-  // delay(1000);
-  // lcd.clear();
+  //Create LCD Splash Screen
+  lcd.backlight();
+  lcd.setCursor(0,0);
+  lcd.print("Transmitting Teensy");
+  lcd.setCursor(0,1);
+  lcd.print("FSO White");
+  delay(1000);
+  lcd.clear();
+
+  // Initialize the seesaw neopixel slider
+  if (!seesaw.begin(DEFAULT_I2C_ADDR)) {
+    Serial.println(F("seesaw not found!"));
+    while(1) delay(10);
+  }
+
+  uint16_t pid;
+  uint8_t year, mon, day;
+
+  seesaw.getProdDatecode(&pid, &year, &mon, &day);
+  Serial.print("seesaw found PID: ");
+  Serial.print(pid);
+  Serial.print(" datecode: ");
+  Serial.print(2000+year); Serial.print("/");
+  Serial.print(mon); Serial.print("/");
+  Serial.println(day);
+  if (pid != 5295) {
+    Serial.println(F("Wrong seesaw PID"));
+    while (1) delay(10);
+  }
+
+  if (!pixels.begin(DEFAULT_I2C_ADDR)){
+    Serial.println("seesaw pixels not found!");
+    while(1) delay(10);
+  }
+
+  Serial.println(F("seesaw started OK!"));
+
+  pixels.setBrightness(255);  // half bright
+  pixels.show(); // Initialize all pixels to 'off'
 }
+
+// Input a value 0 to 255 to get a color value.
+// The colours are a transition r - g - b - back to r.
+// This code is borrowed from the Adafruit neoslider example
+uint32_t Wheel(byte WheelPos) {
+  WheelPos = 255 - WheelPos;
+  if(WheelPos < 85) {
+    return seesaw_NeoPixel::Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  }
+  if(WheelPos < 170) {
+    WheelPos -= 85;
+    return seesaw_NeoPixel::Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  }
+  WheelPos -= 170;
+  return seesaw_NeoPixel::Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+}
+
 
 elapsedMillis volmsec=0;
 
@@ -90,24 +164,24 @@ void loop() {
     volmsec = 0;               //     volume pot on your audio shield
   }
 
-  // Update the voltage of the signal
-  // if (loopCounter == 5){
-  //   analogReadResolution(12);
-  //   double reading = 0;
-  //   reading = analogRead(A13);
-  //   voltage = reading / 1023.0;
-  //   loopCounter = 0;
-  // }
+  // read the potentiometer
+  //loopCounter++;
+  double slide_val = seesaw.analogRead(ANALOGIN);
+  Serial.println(slide_val);
+
+  for (uint8_t i=0; i< pixels.numPixels(); i++) {
+    pixels.setPixelColor(i, Wheel(slide_val / 4));
+  }
+  pixels.show();
 
   // Update the LCD Screen
-  // LCDOutput();
+  LCDOutput(slide_val / 512);
 
   delay(50);
 }
 
-// void LCDOutput(double voltage)
-// {
-//   lcd.setCursor(10, 1);
-//   lcd.print(voltage);
-//   lcd.print(" V");
-// }
+void LCDOutput(double display_gain)
+{
+  lcd.setCursor(10, 1);
+  lcd.print(display_gain);
+}
