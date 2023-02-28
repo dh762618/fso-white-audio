@@ -20,6 +20,10 @@
 #define  ANALOGIN   18
 #define  NEOPIXELOUT 14
 
+// Global Vars
+double voltage = 0;
+int loopCounter = 0; //Counts how many times the loop is entered - used to slow down the voltage reading
+// Declaring Constructor for NeoSlider
 Adafruit_seesaw seesaw;
 seesaw_NeoPixel pixels = seesaw_NeoPixel(4, NEOPIXELOUT, NEO_GRB + NEO_KHZ800);
 
@@ -166,6 +170,7 @@ uint32_t Wheel(byte WheelPos) {
 
 void loop() {
   // read the potentiometer
+  loopCounter++;
   double slide_val = seesaw.analogRead(ANALOGIN);
   Serial.println(slide_val);
 
@@ -174,10 +179,13 @@ void loop() {
   }
   pixels.show();
   // Update LCD
-  analogReadResolution(12);
-  double reading = 0;
-  reading = analogRead(A13);
-  double voltage = reading / 1023.0;
+  if (loopCounter == 5){
+    analogReadResolution(12);
+    double reading = 0;
+    reading = analogRead(A13);
+    voltage = reading / 1023.0;
+    loopCounter = 0;
+  }
   // Check the volume potentiometer for volume level
   bool muted = CheckVolume(slide_val);
   // Doing to LCD Update
@@ -206,6 +214,8 @@ void OutputLCD(double voltage, double volume, bool muted){
   lcd.print(voltage);
   lcd.print(" V");
 }
+
+
 bool CheckVolume(double volume){
   // Check Volume
   analogReadResolution(12);
