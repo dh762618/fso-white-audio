@@ -37,7 +37,7 @@ const int myInput = AUDIO_INPUT_LINEIN;
 void setup() {
   // Audio connections require memory to work.  For more
   // detailed information, see the MemoryAndCpuUsage example
-  AudioMemory(12);
+  AudioMemory(16);
 
   // Enable the audio shield, select input, and enable output
   sgtl5000_1.enable();
@@ -53,11 +53,5 @@ void setup() {
 elapsedMillis volmsec=0;
 
 void loop() {
-  // every 50 ms, adjust the volume
-  if (volmsec > 50) {
-    float vol = analogRead(15);
-    vol = vol / 1023.0;
-    //audioShield.volume(vol); // <-- uncomment if you have the optional
-    volmsec = 0;               //     volume pot on your audio shield
-  }
+  // Nothing will be added here until the other LCD is available 
 }
