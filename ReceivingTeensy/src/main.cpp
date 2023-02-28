@@ -16,7 +16,8 @@
 #include "Adafruit_seesaw.h"
 #include <seesaw_neopixel.h>
 
-#define  DEFAULT_I2C_ADDR 0x30
+// Defining NeoSlider Values
+#define  DEFAULT_I2C_ADDR 0x30 // Address of NeoSlider
 #define  ANALOGIN   18
 #define  NEOPIXELOUT 14
 
@@ -120,7 +121,8 @@ void setup() {
   lcd.print("FSO White");
   delay(1000);
   lcd.clear();
-
+  
+  // NeoSlider Initialization
   if (!seesaw.begin(DEFAULT_I2C_ADDR)) {
     Serial.println(F("seesaw not found!"));
     while(1) delay(10);
@@ -153,8 +155,11 @@ void setup() {
 }
 
 
-// Input a value 0 to 255 to get a color value.
-// The colours are a transition r - g - b - back to r.
+/**
+ * This code is borrowed from an Adafruit NeoSlider Example
+ * Sets the color of the NeoSlider LEDs based on the given value
+ * Src: https://github.com/adafruit/Adafruit_Seesaw 
+*/
 uint32_t Wheel(byte WheelPos) {
   WheelPos = 255 - WheelPos;
   if(WheelPos < 85) {
@@ -169,16 +174,17 @@ uint32_t Wheel(byte WheelPos) {
 }
 
 void loop() {
-  // read the potentiometer
+  // read the NeoSlider potentiometer
   loopCounter++;
   double slide_val = seesaw.analogRead(ANALOGIN);
   Serial.println(slide_val);
 
+  // Set the color of the LEDs 
   for (uint8_t i=0; i< pixels.numPixels(); i++) {
     pixels.setPixelColor(i, Wheel(slide_val / 4));
   }
   pixels.show();
-  // Update LCD
+  // Update LCD every 5 loop iterations
   if (loopCounter == 5){
     analogReadResolution(12);
     double reading = 0;
@@ -195,6 +201,7 @@ void loop() {
 }
 
 void OutputLCD(double voltage, double volume, bool muted){
+  // Print receiving status on last character of first line
   lcd.setCursor(15, 0);
   double inputFreq = spdifIn.getInputFrequency();
   if (inputFreq > 43000){
@@ -202,6 +209,7 @@ void OutputLCD(double voltage, double volume, bool muted){
   } else{
     lcd.print(" ");
   }
+  // Write Volume mute status and level
   lcd.setCursor(0, 1);
   lcd.write(6);
   if (muted){
@@ -222,17 +230,22 @@ bool CheckVolume(double volume){
   int val = digitalRead(33);
   Serial.print("Mute: ");
   Serial.println(val);
+  // Convert Analog Reading to usable Gain modifier
+  // Goes from 0 to 2 on the potentiometer
   double actualGain = volume / 512;
+  // Check status of Mute Switch
   if (val == HIGH || volume == 0){
+    // Mute switch is on, mute output
     amp1.gain(0);
     amp2.gain(0);
+    // Easter egg :P
     lcd.setCursor(0,0);
-    // // :P
     if (volume >= 352 && volume <= 354){lcd.print("Poggers");}
     else{lcd.print("       ");}
     return true;
   }
   else{
+    // Mute switch is off, set gain to current amp modifier
     lcd.setCursor(0,0);
     lcd.print("       ");
     Serial.print("Actual Gain Adj: ");
