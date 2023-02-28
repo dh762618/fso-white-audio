@@ -228,10 +228,13 @@ bool CheckVolume(double volume){
     amp2.gain(0);
     lcd.setCursor(0,0);
     // // :P
-    // if (actualGain == 0.69){lcd.print("Poggers");}
+    if (volume >= 352 && volume <= 354){lcd.print("Poggers");}
+    else{lcd.print("       ");}
     return true;
   }
   else{
+    lcd.setCursor(0,0);
+    lcd.print("       ");
     Serial.print("Actual Gain Adj: ");
     Serial.println(actualGain);
     amp1.gain(actualGain);
