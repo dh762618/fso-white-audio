@@ -20,10 +20,6 @@
 #define  ANALOGIN   18
 #define  NEOPIXELOUT 14
 
-// Global Vars
-// double voltage = 0;
-// int loopCounter = 0; //Counts how many times the loop is entered - used to slow down the voltage reading
-
 // Declaring the constructor for the NeoSlider gain
 Adafruit_seesaw seesaw;
 seesaw_NeoPixel pixels = seesaw_NeoPixel(4, NEOPIXELOUT, NEO_GRB + NEO_KHZ800);
@@ -63,17 +59,19 @@ byte output[] = {
 };
 // possibly touch buttons for sound effects
 
-//choose input between 3.5mm and mic?
+// Declare that the input will constantly be read from the line in ports
 const int myInput = AUDIO_INPUT_LINEIN;
-//const int myInput = AUDIO_INPUT_MIC;
 
 // Declare LCDOutput
 void LCDOutput(double display_gain);
 
-//declare neoslider
+// Declare neoslider function (taken from example)
 uint32_t Wheel(byte WheelPos);
 
-
+// Declare gain regulation function
+void GainRegulation(double gainValue);
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 void setup() {
   // Audio connections require memory to work.  For more
   // detailed information, see the MemoryAndCpuUsage example
@@ -84,12 +82,12 @@ void setup() {
   sgtl5000_1.inputSelect(myInput);
   sgtl5000_1.volume(0.7);
   
-  //set default gain
-  int gain = 1;
-  amp1.gain(gain);
+  // set default gain
+  // int gain = 75;
+  // amp1.gain(gain);
   
   // Implement filter
-  biquad1.setLowpass(0, 5000, 0.707);
+  biquad1.setLowpass(0, 10000, 0.707);
 
   // Implement characters to be displayed on LCD Screen
   lcd.init();
@@ -98,10 +96,10 @@ void setup() {
   //Create LCD Splash Screen
   lcd.backlight();
   lcd.setCursor(0,0);
-  lcd.print("Transmitting Teensy");
+  lcd.print("Transmit Teensy");
   lcd.setCursor(0,1);
   lcd.print("FSO White");
-  delay(1000);
+  delay(2000);
   lcd.clear();
 
   // Initialize the seesaw neopixel slider
@@ -135,7 +133,8 @@ void setup() {
   pixels.setBrightness(255);  // half bright
   pixels.show(); // Initialize all pixels to 'off'
 }
-
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 // Input a value 0 to 255 to get a color value.
 // The colours are a transition r - g - b - back to r.
 // This code is borrowed from the Adafruit neoslider example
@@ -151,10 +150,11 @@ uint32_t Wheel(byte WheelPos) {
   WheelPos -= 170;
   return seesaw_NeoPixel::Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
-
-
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 elapsedMillis volmsec=0;
-
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 void loop() {
   // Every 50 ms, adjust the volume
   if (volmsec > 50) {
@@ -174,14 +174,31 @@ void loop() {
   }
   pixels.show();
 
+  //Update the gain
+  GainRegulation(slide_val);
+
   // Update the LCD Screen
   LCDOutput(slide_val / 512);
 
   delay(50);
 }
-
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 void LCDOutput(double display_gain)
 {
-  lcd.setCursor(10, 1);
+  lcd.setCursor(15,0);
+  lcd.write(0);
+  lcd.setCursor(8, 1);
+  lcd.print("+");
   lcd.print(display_gain);
+  lcd.print(" dB");
 }
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
+void GainRegulation(double gainValue)
+{
+  double actualGain = gainValue / 512;
+  amp1.gain(actualGain);
+}
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
