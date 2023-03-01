@@ -23,7 +23,9 @@
 
 // Global Vars
 double voltage = 0;
-int loopCounter = 0; //Counts how many times the loop is entered - used to slow down the voltage reading
+long long int loopCounter = 0; //Counts how many times the loop is entered - used to slow down the voltage reading
+IntervalTimer receiveTimer;
+
 // Declaring Constructor for NeoSlider
 Adafruit_seesaw seesaw;
 seesaw_NeoPixel pixels = seesaw_NeoPixel(4, NEOPIXELOUT, NEO_GRB + NEO_KHZ800);
@@ -94,6 +96,7 @@ byte receiving[] = {
 void OutputLCD(double voltage, double vol, bool muted);
 uint32_t Wheel(byte WheelPos);
 bool CheckVolume(double volume);
+void receiveSignal();
 
 void setup() {
   AudioMemory(12);
@@ -101,10 +104,12 @@ void setup() {
   amp1.gain(1);
   amp2.gain(1);
   // Initializing Serial connection for debugging
-  Serial.begin(57600);
+  Serial.begin(115200);
   pinMode(PIN_A13, INPUT); // Signal Read pin
   pinMode(33, INPUT_PULLDOWN); // Mute switch reading pin
   pinMode(PIN_A16, INPUT); // Volume reading pin
+  pinMode(38, INPUT_PULLDOWN); // SPDIF IN Digital Read Pin
+  pinMode(39, OUTPUT);
   delayMicroseconds(10);
   // Make custom characters
   lcd.init();
@@ -123,6 +128,7 @@ void setup() {
   lcd.clear();
   
   // NeoSlider Initialization
+  // This code borrowed from AdaFruit NeoSlider example code
   if (!seesaw.begin(DEFAULT_I2C_ADDR)) {
     Serial.println(F("seesaw not found!"));
     while(1) delay(10);
@@ -152,11 +158,17 @@ void setup() {
 
   pixels.setBrightness(255);  // half bright
   pixels.show(); // Initialize all pixels to 'off'
+  // End NeoSlider Initialization
+
+  receiveTimer.begin(receiveSignal, 20);
 }
 
-
+void receiveSignal(){
+  double analogVal = digitalRead(38);
+  Serial.println(analogVal); 
+}
 /**
- * This code is borrowed from an Adafruit NeoSlider Example
+ * This code is borrowed from a AdaFruit NeoSlider Example
  * Sets the color of the NeoSlider LEDs based on the given value
  * Src: https://github.com/adafruit/Adafruit_Seesaw 
 */
@@ -173,11 +185,12 @@ uint32_t Wheel(byte WheelPos) {
   return seesaw_NeoPixel::Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
 
+
 void loop() {
   // read the NeoSlider potentiometer
   loopCounter++;
   double slide_val = seesaw.analogRead(ANALOGIN);
-  Serial.println(slide_val);
+  // Serial.println(slide_val);
 
   // Set the color of the LEDs 
   for (uint8_t i=0; i< pixels.numPixels(); i++) {
@@ -185,19 +198,17 @@ void loop() {
   }
   pixels.show();
   // Update LCD every 5 loop iterations
-  if (loopCounter == 5){
+  if (loopCounter % 5 == 0){
     analogReadResolution(12);
     double reading = 0;
     reading = analogRead(A13);
     voltage = reading / 1023.0;
-    loopCounter = 0;
   }
   // Check the volume potentiometer for volume level
   bool muted = CheckVolume(slide_val);
   // Doing to LCD Update
   OutputLCD(voltage, slide_val / 512, muted);
-
-  delay(50);
+  
 }
 
 void OutputLCD(double voltage, double volume, bool muted){
@@ -226,10 +237,9 @@ void OutputLCD(double voltage, double volume, bool muted){
 
 bool CheckVolume(double volume){
   // Check Volume
-  analogReadResolution(12);
   int val = digitalRead(33);
-  Serial.print("Mute: ");
-  Serial.println(val);
+  // Serial.print("Mute: ");
+  // Serial.println(val);
   // Convert Analog Reading to usable Gain modifier
   // Goes from 0 to 2 on the potentiometer
   double actualGain = volume / 512;
@@ -248,8 +258,8 @@ bool CheckVolume(double volume){
     // Mute switch is off, set gain to current amp modifier
     lcd.setCursor(0,0);
     lcd.print("       ");
-    Serial.print("Actual Gain Adj: ");
-    Serial.println(actualGain);
+    // Serial.print("Actual Gain Adj: ");
+    // Serial.println(actualGain);
     amp1.gain(actualGain);
     amp2.gain(actualGain);
     return false;

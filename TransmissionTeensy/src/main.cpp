@@ -23,6 +23,8 @@
 // Declaring the constructor for the NeoSlider gain
 Adafruit_seesaw seesaw;
 seesaw_NeoPixel pixels = seesaw_NeoPixel(4, NEOPIXELOUT, NEO_GRB + NEO_KHZ800);
+IntervalTimer mytimer;
+int laserState = LOW;
 
 // Set up LCD
 LiquidCrystal_I2C lcd(0x27, 16 ,2);
@@ -70,6 +72,7 @@ uint32_t Wheel(byte WheelPos);
 
 // Declare gain regulation function
 void GainRegulation(double gainValue);
+void blinkLaser();
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 void setup() {
@@ -81,6 +84,8 @@ void setup() {
   sgtl5000_1.enable();
   sgtl5000_1.inputSelect(myInput);
   sgtl5000_1.volume(0.7);
+
+  pinMode(39, OUTPUT);
   
   // set default gain
   // int gain = 75;
@@ -132,6 +137,8 @@ void setup() {
 
   pixels.setBrightness(255);  // half bright
   pixels.show(); // Initialize all pixels to 'off'
+
+  mytimer.begin(blinkLaser, 20);
 }
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -155,6 +162,16 @@ uint32_t Wheel(byte WheelPos) {
 elapsedMillis volmsec=0;
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
+
+void blinkLaser(){
+  if (laserState == LOW)
+  {
+    laserState = HIGH;
+  } else{
+    laserState = LOW;
+  }
+  digitalWrite(39, laserState);
+}
 void loop() {
   // Every 50 ms, adjust the volume
   if (volmsec > 50) {
