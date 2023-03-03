@@ -15,6 +15,7 @@
 #include <../include/LiquidCrystal_I2C.h>
 #include "Adafruit_seesaw.h"
 #include <seesaw_neopixel.h>
+#include <TeensyTimerTool.h>
 
 // Defining NeoSlider Values
 #define  DEFAULT_I2C_ADDR 0x30 // Address of NeoSlider
@@ -24,8 +25,7 @@
 // Global Vars
 double voltage = 0;
 long long int loopCounter = 0; //Counts how many times the loop is entered - used to slow down the voltage reading
-IntervalTimer receiveTimer;
-
+TeensyTimerTool::PeriodicTimer t1(TeensyTimerTool::GPT2);
 // Declaring Constructor for NeoSlider
 Adafruit_seesaw seesaw;
 seesaw_NeoPixel pixels = seesaw_NeoPixel(4, NEOPIXELOUT, NEO_GRB + NEO_KHZ800);
@@ -104,12 +104,12 @@ void setup() {
   amp1.gain(1);
   amp2.gain(1);
   // Initializing Serial connection for debugging
-  Serial.begin(115200);
+  Serial.begin(250000);
   pinMode(PIN_A13, INPUT); // Signal Read pin
   pinMode(33, INPUT_PULLDOWN); // Mute switch reading pin
   pinMode(PIN_A16, INPUT); // Volume reading pin
-  pinMode(38, INPUT_PULLDOWN); // SPDIF IN Digital Read Pin
-  pinMode(39, OUTPUT);
+  pinMode(38, INPUT); // SPDIF IN Digital Read Pin
+  pinMode(39, INPUT_PULLDOWN); // Laser Test Reading Pin
   delayMicroseconds(10);
   // Make custom characters
   lcd.init();
@@ -160,12 +160,13 @@ void setup() {
   pixels.show(); // Initialize all pixels to 'off'
   // End NeoSlider Initialization
 
-  receiveTimer.begin(receiveSignal, 20);
+  // Digital Read from Laser
+  t1.begin(receiveSignal, 500ns);
 }
 
 void receiveSignal(){
-  double analogVal = digitalRead(38);
-  Serial.println(analogVal); 
+  int analogVal = digitalReadFast(39);
+  Serial.print(analogVal); 
 }
 /**
  * This code is borrowed from a AdaFruit NeoSlider Example
@@ -201,8 +202,9 @@ void loop() {
   if (loopCounter % 5 == 0){
     analogReadResolution(12);
     double reading = 0;
-    reading = analogRead(A13);
+    reading = analogRead(A14);
     voltage = reading / 1023.0;
+    loopCounter = 0;
   }
   // Check the volume potentiometer for volume level
   bool muted = CheckVolume(slide_val);

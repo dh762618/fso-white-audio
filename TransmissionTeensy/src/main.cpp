@@ -15,6 +15,7 @@
 #include <../include/LiquidCrystal_I2C.h>
 #include "Adafruit_seesaw.h"
 #include <seesaw_neopixel.h>
+#include <TeensyTimerTool.h>
 
 #define  DEFAULT_I2C_ADDR 0x30
 #define  ANALOGIN   18
@@ -25,6 +26,7 @@ Adafruit_seesaw seesaw;
 seesaw_NeoPixel pixels = seesaw_NeoPixel(4, NEOPIXELOUT, NEO_GRB + NEO_KHZ800);
 IntervalTimer mytimer;
 int laserState = LOW;
+TeensyTimerTool::PeriodicTimer t1(TeensyTimerTool::GPT2);
 
 // Set up LCD
 LiquidCrystal_I2C lcd(0x27, 16 ,2);
@@ -72,7 +74,7 @@ uint32_t Wheel(byte WheelPos);
 
 // Declare gain regulation function
 void GainRegulation(double gainValue);
-void blinkLaser();
+void callback();
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 void setup() {
@@ -138,7 +140,8 @@ void setup() {
   pixels.setBrightness(255);  // half bright
   pixels.show(); // Initialize all pixels to 'off'
 
-  mytimer.begin(blinkLaser, 20);
+  t1.begin(callback, 500ns);
+  pinMode(39, OUTPUT);
 }
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -162,6 +165,7 @@ uint32_t Wheel(byte WheelPos) {
 elapsedMillis volmsec=0;
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
+
 void blinkLaser(){
   if (laserState == LOW)
   {
@@ -171,8 +175,6 @@ void blinkLaser(){
   }
   digitalWrite(39, laserState);
 }
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
 void loop() {
   // Every 50 ms, adjust the volume
   if (volmsec > 50) {
