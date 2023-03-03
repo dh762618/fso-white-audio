@@ -162,7 +162,6 @@ uint32_t Wheel(byte WheelPos) {
 elapsedMillis volmsec=0;
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
-
 void blinkLaser(){
   if (laserState == LOW)
   {
@@ -172,6 +171,8 @@ void blinkLaser(){
   }
   digitalWrite(39, laserState);
 }
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
 void loop() {
   // Every 50 ms, adjust the volume
   if (volmsec > 50) {
@@ -195,7 +196,7 @@ void loop() {
   GainRegulation(slide_val);
 
   // Update the LCD Screen
-  LCDOutput(slide_val / 512);
+  LCDOutput((slide_val / 512));
 
   delay(50);
 }
@@ -205,7 +206,7 @@ void LCDOutput(double display_gain)
 {
   lcd.setCursor(15,0);
   lcd.write(0);
-  lcd.setCursor(8, 1);
+  lcd.setCursor(7, 1);
   lcd.print("+");
   lcd.print(display_gain);
   lcd.print(" dB");
@@ -214,7 +215,9 @@ void LCDOutput(double display_gain)
 ////////////////////////////////////////////////////////////////////////
 void GainRegulation(double gainValue)
 {
-  double actualGain = gainValue / 512;
+  double actualGain = gainValue / 100;
+  if (actualGain == 0)
+    actualGain = 2;
   amp1.gain(actualGain);
 }
 /////////////////////////////////////////////////////////////////////////
