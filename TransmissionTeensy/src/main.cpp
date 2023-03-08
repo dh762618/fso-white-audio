@@ -166,11 +166,15 @@ elapsedMillis volmsec=0;
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
-void callback() // toggle the LED
-{
-    digitalWriteFast(39, !digitalReadFast(39));
+void blinkLaser(){
+  if (laserState == LOW)
+  {
+    laserState = HIGH;
+  } else{
+    laserState = LOW;
+  }
+  digitalWrite(39, laserState);
 }
-
 void loop() {
   // Every 50 ms, adjust the volume
   if (volmsec > 50) {
@@ -205,7 +209,7 @@ void LCDOutput(double display_gain)
   display_gain += 1.8;
   lcd.setCursor(15,0);
   lcd.write(0);
-  lcd.setCursor(8, 1);
+  lcd.setCursor(7, 1);
   lcd.print("+");
   lcd.print(20*log10(display_gain), 2);
   
