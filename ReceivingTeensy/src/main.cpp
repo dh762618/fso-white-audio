@@ -35,14 +35,14 @@ LiquidCrystal_I2C lcd(0x27, 16 ,2);
 
 // Teensy Audio Library
 // GUItool: begin automatically generated code
-AsyncAudioInputSPDIF3    spdifIn(false, false, 100, 20, 80);   //xy=307,222
-AudioAmplifier           amp2;           //xy=473,247
-AudioAmplifier           amp1;           //xy=477,211
-AudioOutputPT8211        i2s1;           //xy=740,223
+AsyncAudioInputSPDIF3    spdifIn;   //xy=335,357
+AudioAmplifier           amp1;           //xy=540,337
+AudioAmplifier           amp2;           //xy=572,378
+AudioOutputPT8211        pt8211_1;       //xy=769,343
 AudioConnection          patchCord1(spdifIn, 0, amp1, 0);
-AudioConnection          patchCord2(spdifIn, 1, amp2, 0);
-AudioConnection          patchCord3(amp2, 0, i2s1, 1);
-AudioConnection          patchCord4(amp1, 0, i2s1, 0);   //xy=106,226
+AudioConnection          patchCord2(spdifIn, 0, amp2, 0);
+AudioConnection          patchCord3(amp1, 0, pt8211_1, 0);
+AudioConnection          patchCord4(amp2, 0, pt8211_1, 1);
 // GUItool: end automatically generated code
 
 
@@ -102,7 +102,7 @@ void setup() {
   AudioMemory(12);
   // Setting default gains
   amp1.gain(1);
-  amp2.gain(1);
+  amp2.gain(-1);
   // Initializing Serial connection for debugging
   Serial.begin(250000);
   pinMode(PIN_A13, INPUT); // Signal Read pin
@@ -263,7 +263,7 @@ bool CheckVolume(double volume){
     // Serial.print("Actual Gain Adj: ");
     // Serial.println(actualGain);
     amp1.gain(actualGain);
-    amp2.gain(actualGain);
+    amp2.gain(-actualGain);
     return false;
   }
 }
