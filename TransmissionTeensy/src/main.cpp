@@ -140,7 +140,7 @@ void setup() {
   pixels.setBrightness(255);  // half bright
   pixels.show(); // Initialize all pixels to 'off'
 
-  t1.begin(callback, 500ns);
+  t1.begin(callback, 20us);
   pinMode(39, OUTPUT);
 }
 ////////////////////////////////////////////////////////////////////////
@@ -165,7 +165,6 @@ uint32_t Wheel(byte WheelPos) {
 elapsedMillis volmsec=0;
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
-
 void blinkLaser(){
   if (laserState == LOW)
   {
@@ -175,6 +174,8 @@ void blinkLaser(){
   }
   digitalWrite(39, laserState);
 }
+/////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
 void loop() {
   // Every 50 ms, adjust the volume
   if (volmsec > 50) {
@@ -198,7 +199,7 @@ void loop() {
   GainRegulation(slide_val);
 
   // Update the LCD Screen
-  LCDOutput((slide_val / 512));
+  LCDOutput(slide_val);
 
   delay(50);
 }
@@ -206,21 +207,28 @@ void loop() {
 ////////////////////////////////////////////////////////////////////////
 void LCDOutput(double display_gain)
 {
+  display_gain += 1.8;
   lcd.setCursor(15,0);
   lcd.write(0);
   lcd.setCursor(7, 1);
   lcd.print("+");
-  lcd.print(display_gain);
+  lcd.print(20*log10(display_gain), 2);
+  
+  if (20*log10(display_gain) < 10){
+    lcd.setCursor(13, 1);
+    lcd.print(" ");
+  }
+  lcd.setCursor(13, 1);
   lcd.print(" dB");
 }
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 void GainRegulation(double gainValue)
 {
-  double actualGain = gainValue / 100;
-  if (actualGain == 0)
-    actualGain = 2;
+  double actualGain = gainValue + 1.8;
   amp1.gain(actualGain);
+  Serial.print("Actual Gain: ");
+  Serial.println(actualGain);
 }
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////

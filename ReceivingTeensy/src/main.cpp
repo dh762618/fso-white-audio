@@ -12,6 +12,7 @@
 #include <SPI.h>
 #include <SD.h>
 #include <SerialFlash.h>
+#include <iomanip>
 #include <../include/LiquidCrystal_I2C.h>
 #include "Adafruit_seesaw.h"
 #include <seesaw_neopixel.h>
@@ -161,7 +162,7 @@ void setup() {
   // End NeoSlider Initialization
 
   // Digital Read from Laser
-  t1.begin(receiveSignal, 500ns);
+  t1.begin(receiveSignal, 20us);
 }
 
 void receiveSignal(){
@@ -209,7 +210,7 @@ void loop() {
   // Check the volume potentiometer for volume level
   bool muted = CheckVolume(slide_val);
   // Doing to LCD Update
-  OutputLCD(voltage, slide_val / 512, muted);
+  OutputLCD(voltage, slide_val, muted);
   
 }
 
@@ -217,6 +218,7 @@ void OutputLCD(double voltage, double volume, bool muted){
   // Print receiving status on last character of first line
   lcd.setCursor(15, 0);
   double inputFreq = spdifIn.getInputFrequency();
+  double actualVolume = volume / 320;
   if (inputFreq > 43000){
     lcd.write(7);
   } else{
@@ -230,7 +232,16 @@ void OutputLCD(double voltage, double volume, bool muted){
   } else{
     lcd.write(1);
   }
-  lcd.print(volume);
+  if (20*log10(actualVolume) <= 1){
+    lcd.print(actualVolume, 2);
+  }
+  else{
+    lcd.print(20*log10(actualVolume), 2);
+    if (20*log10(actualVolume) < 10){
+      lcd.setCursor(6, 1);
+      lcd.print(" ");
+    }
+  }
   lcd.setCursor(10, 1);
   lcd.print(voltage);
   lcd.print(" V");
@@ -244,7 +255,7 @@ bool CheckVolume(double volume){
   // Serial.println(val);
   // Convert Analog Reading to usable Gain modifier
   // Goes from 0 to 2 on the potentiometer
-  double actualGain = volume / 512;
+  double actualGain = volume / 320;
   // Check status of Mute Switch
   if (val == HIGH || volume == 0){
     // Mute switch is on, mute output
