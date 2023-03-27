@@ -39,13 +39,9 @@ AudioOutputSPDIF3        spout1;
 AudioOutputI2S           i2s2;           //xy=365,94
 AudioAmplifier           amp1;
 AudioConnection          patchCord1(i2s1, 0, amp1, 0);
-AudioConnection          patchCord2(i2s1, 1, amp1, 1);
 AudioConnection          patchCord3(amp1, 0, biquad1, 0);
-AudioConnection          patchCord4(amp1, 1, biquad1, 1);
 AudioConnection          patchCord5(biquad1, 0, i2s2, 0);
-AudioConnection          patchCord6(biquad1, 1, i2s2, 1);
 AudioConnection          patchCord7(biquad1, 0, spout1, 0);
-AudioConnection          patchCord8(biquad1, 1, spout1, 1);
 AudioControlSGTL5000     sgtl5000_1;     //xy=302,184
 // GUItool: end automatically generated code
 
@@ -88,6 +84,11 @@ void setup() {
   sgtl5000_1.volume(0.7);
 
   pinMode(39, OUTPUT);
+  pinMode(38, INPUT_PULLUP);
+  pinMode(37, OUTPUT);
+
+  // Default Pin Values
+  digitalWrite(37, LOW);
   
   // set default gain
   // int gain = 75;
@@ -140,8 +141,9 @@ void setup() {
   pixels.setBrightness(255);  // half bright
   pixels.show(); // Initialize all pixels to 'off'
 
-  t1.begin(callback, 20us);
-  pinMode(39, OUTPUT);
+  // Test code that pulses 1s and 0s repeatedly at ~50 kHz
+  //t1.begin(callback, 20us);
+  //pinMode(39, OUTPUT);
 }
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -165,7 +167,7 @@ uint32_t Wheel(byte WheelPos) {
 elapsedMillis volmsec=0;
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
-void blinkLaser(){
+void callback(){
   if (laserState == LOW)
   {
     laserState = HIGH;
@@ -200,6 +202,17 @@ void loop() {
 
   // Update the LCD Screen
   LCDOutput(slide_val);
+
+  // Read the voltage on the 'L' PAD to determine if it is on
+  int LReading = analogRead(38);
+  if (LReading > 50){
+    digitalWrite(37, HIGH);
+  } else{
+    digitalWrite(37, LOW);
+  }
+
+  Serial.print("Voltage on L PAD: ");
+  Serial.println(LReading);
 
   delay(50);
 }
