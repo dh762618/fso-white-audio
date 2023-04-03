@@ -1,15 +1,17 @@
 #include <Arduino.h>
+#include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_NeoPixel.h>
 #include <Adafruit_TestBed.h>
 #include <Adafruit_ST7789.h>
 #include <Adafruit_MAX1704X.h>
+#include <SPI.h>
 
 // Declare Interfaces with Battery and Display
 Adafruit_MAX17048 battery;
-Adafruit_ST7789 display = Adafruit_ST7789(10, 8, 9);
+Adafruit_ST7789 display = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
 
   //Set up the battery that is connected to the feather
   if (!battery.begin()) {
@@ -34,15 +36,27 @@ void setup() {
   display.init(135, 240); // Init ST7789 240x135
   display.setRotation(3);
   display.fillScreen(ST77XX_BLACK);
+
+  Serial.println(F("Initialized"));
+
+  display.setTextWrap(false);
+  display.fillScreen(ST77XX_BLACK);
+  display.setCursor(0, 30);
+  display.setTextColor(ST77XX_RED);
+  display.setTextSize(2);
+  display.print("FSO");
+  delay(1000);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  display.setCursor(0,0);
-  display.setTextColor(ST77XX_WHITE);
-  display.setTextWrap(true);
-  display.print("Battery Level: ");
-  display.println(battery.cellPercent());
+  display.fillScreen(ST77XX_BLACK);
+  display.setCursor(0, 30);
+  display.setTextColor(ST77XX_RED);
+  display.print("Battery Level:");
+  display.print(battery.cellPercent());
+  display.println("%");
+  display.setTextColor(ST77XX_YELLOW);
   display.print("Battery Voltage: ");
   display.println(battery.cellVoltage());
   delay(2000);
