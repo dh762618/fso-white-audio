@@ -24,6 +24,8 @@
 // Declaring the constructor for the NeoSlider gain
 Adafruit_seesaw seesaw;
 seesaw_NeoPixel pixels = seesaw_NeoPixel(4, NEOPIXELOUT, NEO_GRB + NEO_KHZ800);
+
+// Declaration for test code 1's and 0's
 IntervalTimer mytimer;
 int laserState = LOW;
 TeensyTimerTool::PeriodicTimer t1(TeensyTimerTool::GPT2);
@@ -142,8 +144,8 @@ void setup() {
   pixels.show(); // Initialize all pixels to 'off'
 
   // Test code that pulses 1s and 0s repeatedly at ~50 kHz
-  //t1.begin(callback, 20us);
-  //pinMode(39, OUTPUT);
+  t1.begin(callback, 5us);
+  pinMode(39, OUTPUT);
 }
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -174,7 +176,7 @@ void callback(){
   } else{
     laserState = LOW;
   }
-  digitalWrite(39, laserState);
+  digitalWriteFast(39, laserState);
 }
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
@@ -204,8 +206,9 @@ void loop() {
   LCDOutput(slide_val);
 
   // Read the voltage on the 'L' PAD to determine if it is on
+  // Allows for LED indicator 
   int LReading = analogRead(38);
-  if (LReading > 50){
+  if (LReading > 400){
     digitalWrite(37, HIGH);
   } else{
     digitalWrite(37, LOW);
