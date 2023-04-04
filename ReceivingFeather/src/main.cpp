@@ -21,6 +21,7 @@ int isMuted = 0;
 bool buttonPressed;
 void buttonInterrupt();
 void updateDisplay(int textColor);
+double getVolume();
 
 void IRAM_ATTR wakeup(void* arg){}
 
@@ -106,16 +107,31 @@ void updateDisplay(int textColor){
 
   // Button labels
   display.drawBitmap(0,0, epd_bitmap_power, 25, 25, ST77XX_WHITE);
-  display.drawBitmap(0,60,epd_bitmap_volumemuted, 31, 24, ST77XX_WHITE);
+  if (!isMuted){
+    display.drawBitmap(0,60,epd_bitmap_volumemuted, 31, 24, ST77XX_WHITE);
+  }
+  else {display.drawBitmap(0,60,epd_bitmap_volumeon, 31, 24, ST77XX_WHITE);}
   display.drawLine(35, 0, 35, 135, ST77XX_WHITE);
   // Volume level management
   if (isMuted){
     display.drawBitmap(55,60,epd_bitmap_volumemuted, 31, 24, ST77XX_RED);
     display.setTextColor(ST77XX_RED);
-    analogWrite(A0, 3.3);
+    digitalWrite(5, HIGH);
   } else{
     display.drawBitmap(55,60,epd_bitmap_volumeon, 31, 24, ST77XX_WHITE);
     display.setTextColor(ST77XX_WHITE);
-    analogWrite(A0, 0);
+    digitalWrite(5, LOW);
   }
+  double volume = getVolume();
+  display.setCursor(104,66);
+  display.print(volume);
+
+  // Receiving signal indicator
+  display.drawBitmap(190, 85, epd_bitmap_Download, 50, 50, ST77XX_WHITE);
+}
+
+double getVolume(){
+  analogReadResolution(16);
+  int vol = analogRead(A1);
+  return vol / 320.0;
 }
