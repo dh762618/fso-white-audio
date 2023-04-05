@@ -7,6 +7,7 @@
 #include <Fonts/FreeMono9pt7b.h>
 #include "Adafruit_seesaw.h"
 #include <seesaw_neopixel.h>
+#include <bitMap.h>
 
 #define  ANALOGIN 18
 #define  NEOPIXELOUT 14
@@ -16,11 +17,6 @@
 Adafruit_MAX17048 battery;
 Adafruit_ST7789 display = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
-// Declaring the constructor for the NeoSlider gain
-Adafruit_seesaw seesaw;
-seesaw_NeoPixel pixels = seesaw_NeoPixel(4, NEOPIXELOUT, NEO_GRB + NEO_KHZ800);
-// Declare neoslider function (taken from example)
-uint32_t Wheel(byte WheelPos);
 
 void setup() {
   Serial.begin(115200);
@@ -36,32 +32,6 @@ void setup() {
   Serial.print("Found MAX17048");
   Serial.print(" with Chip ID: 0x"); 
   Serial.println(battery.getChipID());
-  
-  // Initialize the seesaw neopixel slider
-  if (!seesaw.begin(DEFAULT_I2C_ADDR)) {
-    Serial.println(F("seesaw not found!"));
-    while(1) delay(10);
-  }
-  uint16_t pid;
-  uint8_t year, mon, day;
-  seesaw.getProdDatecode(&pid, &year, &mon, &day);
-  Serial.print("seesaw found PID: ");
-  Serial.print(pid);
-  Serial.print(" datecode: ");
-  Serial.print(2000+year); Serial.print("/");
-  Serial.print(mon); Serial.print("/");
-  Serial.println(day);
-  if (pid != 5295) {
-    Serial.println(F("Wrong seesaw PID"));
-    while (1) delay(10);
-  }
-  if (!pixels.begin(DEFAULT_I2C_ADDR)){
-    Serial.println("seesaw pixels not found!");
-    while(1) delay(10);
-  }
-  Serial.println(F("seesaw started OK!"));
-  pixels.setBrightness(255);  // half bright
-  pixels.show(); // Initialize all pixels to 'off'
 
   // Set up the screen that is connected to the feather
 
@@ -78,36 +48,68 @@ void setup() {
   display.init(135, 240); // Init ST7789 240x135
   display.setRotation(3);
   display.fillScreen(ST77XX_BLACK);
+  display.setTextColor(ST77XX_WHITE);
+  display.setTextSize(2);
 
   display.setCursor(0,0);
   display.setTextColor(ST77XX_WHITE);
   display.setTextWrap(false);
   display.print("FSO White Team\n");
   display.print("Transmission Feather");
-  delay(4000);
+  delay(2000);
+  display.fillScreen(ST77XX_BLACK);
+
+  display.drawBitmap(0,0, epd_bitmap_Dan_Allwine_300x450, 240, 135, ST77XX_WHITE);
+  display.setCursor(60, 120);
+  display.print("Dan Allwine");
+  delay(2000);
+  display.fillScreen(ST77XX_BLACK);
+
+  display.drawBitmap(0,0, epd_bitmap_Daniel, 240, 120, ST77XX_WHITE);
+  display.setCursor(60, 120);
+  display.print("Daniel Cobb");
+  delay(2000);
+  display.fillScreen(ST77XX_BLACK);
+
+  display.drawBitmap(0,0, epd_bitmap_Remi, 240, 120, ST77XX_WHITE);
+  display.setCursor(60, 120);
+  display.print("Remi Fordyce");
+  delay(2000);
+  display.fillScreen(ST77XX_BLACK);
+
+  display.drawBitmap(0,0, epd_bitmap_Devin, 240, 120, ST77XX_WHITE);
+  display.setCursor(60, 120);
+  display.print("Devin Holt");
+  delay(2000);
+  display.fillScreen(ST77XX_BLACK);
+
+  display.drawBitmap(0,0, epd_bitmap_Carson, 240, 120, ST77XX_WHITE);
+  display.setCursor(60, 120);
+  display.print("Carson Magni");
+  delay(2000);
   display.fillScreen(ST77XX_BLACK);
 }
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 void loop() {
   // put your main code here, to run repeatedly:
+  display.fillScreen(ST77XX_BLACK);
   display.setCursor(0,0);
   display.setTextColor(ST77XX_WHITE);
   display.setTextWrap(true);
-  display.print("Battery Level: ");
-  display.println(battery.cellPercent());
-  display.print("Battery Voltage: ");
-  display.println(battery.cellVoltage());
-  delay(2000);
+  display.print("Batt Level: ");
+  display.print(battery.cellPercent());
+  display.println(" %");
+  display.print("Batt Voltage: ");
+  display.print(battery.cellVoltage());
+  display.println(" V");
 
-  // read the adafruit neoslider
-  double slide_val = seesaw.analogRead(ANALOGIN);
-  Serial.println(slide_val);
+  //void drawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t h, uint16_t color);
+  //display.drawBitmap(0, 50, epd_bitmap_Sound, 25, 25, ST77XX_WHITE);
+  
+  display.flush();
 
-  for (uint8_t i=0; i< pixels.numPixels(); i++) {
-    pixels.setPixelColor(i, Wheel(slide_val / 4));
-  }
-  pixels.show();
+  delay(8);
 }
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
