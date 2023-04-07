@@ -34,7 +34,6 @@ void setup() {
   Serial.println(battery.getChipID());
 
   // Set up the screen that is connected to the feather
-
   // turn on backlite
   pinMode(TFT_BACKLITE, OUTPUT);
   digitalWrite(TFT_BACKLITE, HIGH);
@@ -106,25 +105,10 @@ void loop() {
 
   //void drawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t h, uint16_t color);
   //display.drawBitmap(0, 50, epd_bitmap_Sound, 25, 25, ST77XX_WHITE);
-  
+
   display.flush();
 
   delay(8);
-}
-///////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////
-// allows for neosldier to change colors as the potentiometer is adjusted
-uint32_t Wheel(byte WheelPos) {
-  WheelPos = 255 - WheelPos;
-  if(WheelPos < 85) {
-    return seesaw_NeoPixel::Color(255 - WheelPos * 3, 0, WheelPos * 3);
-  }
-  if(WheelPos < 170) {
-    WheelPos -= 85;
-    return seesaw_NeoPixel::Color(0, WheelPos * 3, 255 - WheelPos * 3);
-  }
-  WheelPos -= 170;
-  return seesaw_NeoPixel::Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////

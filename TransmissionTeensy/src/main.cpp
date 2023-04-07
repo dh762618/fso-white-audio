@@ -144,7 +144,7 @@ void setup() {
   pixels.show(); // Initialize all pixels to 'off'
 
   // Test code that pulses 1s and 0s repeatedly at ~50 kHz
-  t1.begin(callback, 5us);
+  t1.begin(callback, 1us);
   pinMode(39, OUTPUT);
 }
 ////////////////////////////////////////////////////////////////////////
