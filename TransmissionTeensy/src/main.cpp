@@ -112,13 +112,8 @@ void setup() {
   pixels.setBrightness(255);  // half bright
   pixels.show(); // Initialize all pixels to 'off'
 
-<<<<<<< HEAD
   // Test code that pulses 1s and 0s repeatedly at ~50 kHz
   //t1.begin(callback, 1us);
-=======
-  // Test code that pulses 1s and 0s repeatedly at ~1.6 MHz
-  //t1.begin(callback, 312.5ns);
->>>>>>> 86f82ed52dbf65255a3415d3910121b028cbb659
   pinMode(39, OUTPUT);
 }
 ////////////////////////////////////////////////////////////////////////
