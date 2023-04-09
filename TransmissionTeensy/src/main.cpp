@@ -4,7 +4,7 @@
  * Takes input from the 3.5mm and XLR audio jacks and passes the 
  * signal though a pre-amplification gain and low pass filter. The 
  * signal is then transmitted via laser diode. The signal strength is 
- * displayed via an LCD Display.
+ * displayed via Reverse Feather Display.
  * 
  */
 
@@ -12,7 +12,6 @@
 #include <Wire.h>
 #include <SPI.h>
 #include <SerialFlash.h>
-#include <../include/LiquidCrystal_I2C.h>
 #include "Adafruit_seesaw.h"
 #include <seesaw_neopixel.h>
 #include <TeensyTimerTool.h>
@@ -30,9 +29,6 @@ IntervalTimer mytimer;
 int laserState = LOW;
 TeensyTimerTool::PeriodicTimer t1(TeensyTimerTool::GPT2);
 
-// Set up LCD
-LiquidCrystal_I2C lcd(0x27, 16 ,2);
-
 // From Teensy Audio Library
 // GUItool: begin automatically generated code4
 AudioFilterBiquad        biquad1;
@@ -47,25 +43,11 @@ AudioConnection          patchCord7(biquad1, 0, spout1, 0);
 AudioControlSGTL5000     sgtl5000_1;     //xy=302,184
 // GUItool: end automatically generated code
 
-// LCD Character Declarations
-// output signal level
-byte output[] = {
-  B00000,
-  B00100,
-  B00110,
-  B11111,
-  B00110,
-  B00100,
-  B00000,
-  B00000
-};
 // possibly touch buttons for sound effects
 
 // Declare that the input will constantly be read from the line in ports
 const int myInput = AUDIO_INPUT_LINEIN;
 
-// Declare LCDOutput
-void LCDOutput(double display_gain);
 
 // Declare neoslider function (taken from example)
 uint32_t Wheel(byte WheelPos);
@@ -99,19 +81,6 @@ void setup() {
   // Implement filter
   biquad1.setLowpass(0, 10000, 0.707);
 
-  // Implement characters to be displayed on LCD Screen
-  lcd.init();
-  lcd.createChar(0, output);
-
-  //Create LCD Splash Screen
-  lcd.backlight();
-  lcd.setCursor(0,0);
-  lcd.print("Transmit Teensy");
-  lcd.setCursor(0,1);
-  lcd.print("FSO White");
-  delay(2000);
-  lcd.clear();
-
   // Initialize the seesaw neopixel slider
   if (!seesaw.begin(DEFAULT_I2C_ADDR)) {
     Serial.println(F("seesaw not found!"));
@@ -143,8 +112,13 @@ void setup() {
   pixels.setBrightness(255);  // half bright
   pixels.show(); // Initialize all pixels to 'off'
 
+<<<<<<< HEAD
   // Test code that pulses 1s and 0s repeatedly at ~50 kHz
   //t1.begin(callback, 1us);
+=======
+  // Test code that pulses 1s and 0s repeatedly at ~1.6 MHz
+  //t1.begin(callback, 312.5ns);
+>>>>>>> 86f82ed52dbf65255a3415d3910121b028cbb659
   pinMode(39, OUTPUT);
 }
 ////////////////////////////////////////////////////////////////////////
@@ -202,8 +176,10 @@ void loop() {
   //Update the gain
   GainRegulation(slide_val);
 
-  // Update the LCD Screen
-  LCDOutput(slide_val);
+  // Output will be displayed on reverse TFT Feather
+  // Code needs added here to interface with the feather instead of doing LCD stuff
+  // // Update the LCD Screen
+  // LCDOutput(slide_val);
 
   // Read the voltage on the 'L' PAD to determine if it is on
   // Allows for LED indicator 
@@ -221,22 +197,22 @@ void loop() {
 }
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
-void LCDOutput(double display_gain)
-{
-  display_gain += 1.8;
-  lcd.setCursor(15,0);
-  lcd.write(0);
-  lcd.setCursor(7, 1);
-  lcd.print("+");
-  lcd.print(20*log10(display_gain), 2);
+// void LCDOutput(double display_gain)
+// {
+//   display_gain += 1.8;
+//   lcd.setCursor(15,0);
+//   lcd.write(0);
+//   lcd.setCursor(7, 1);
+//   lcd.print("+");
+//   lcd.print(20*log10(display_gain), 2);
   
-  if (20*log10(display_gain) < 10){
-    lcd.setCursor(13, 1);
-    lcd.print(" ");
-  }
-  lcd.setCursor(13, 1);
-  lcd.print(" dB");
-}
+//   if (20*log10(display_gain) < 10){
+//     lcd.setCursor(13, 1);
+//     lcd.print(" ");
+//   }
+//   lcd.setCursor(13, 1);
+//   lcd.print(" dB");
+// }
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 void GainRegulation(double gainValue)

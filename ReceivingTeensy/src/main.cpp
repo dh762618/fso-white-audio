@@ -13,7 +13,6 @@
 #include <SD.h>
 #include <SerialFlash.h>
 #include <iomanip>
-#include <../include/LiquidCrystal_I2C.h>
 #include "Adafruit_seesaw.h"
 #include <seesaw_neopixel.h>
 #include <TeensyTimerTool.h>
@@ -24,15 +23,12 @@
 #define  NEOPIXELOUT 14
 
 // Global Vars
-double voltage = 0;
-long long int loopCounter = 0; //Counts how many times the loop is entered - used to slow down the voltage reading
+FASTRUN float voltage = 0;
 TeensyTimerTool::PeriodicTimer t1(TeensyTimerTool::GPT2);
+
 // Declaring Constructor for NeoSlider
 Adafruit_seesaw seesaw;
 seesaw_NeoPixel pixels = seesaw_NeoPixel(4, NEOPIXELOUT, NEO_GRB + NEO_KHZ800);
-
-// Set up LCD
-LiquidCrystal_I2C lcd(0x27, 16 ,2);
 
 // Teensy Audio Library
 // GUItool: begin automatically generated code
@@ -47,57 +43,12 @@ AudioConnection          patchCord4(amp2, 0, pt8211_1, 1);
 // GUItool: end automatically generated code
 
 
-// LCD Character Declarations
-byte muted[] = {
-  B00000,
-  B10001,
-  B01010,
-  B00100,
-  B01010,
-  B10001,
-  B00000,
-  B00000
-};
 
-byte unmuted[] = {
-  B00010,
-  B01001,
-  B00101,
-  B00101,
-  B00101,
-  B01001,
-  B00010,
-  B00000
-};
-
-byte volume[] = {
-  B00001,
-  B00011,
-  B01111,
-  B01111,
-  B01111,
-  B00011,
-  B00001,
-  B00000
-
-};
-
-byte receiving[] = {
-  B00100,
-  B00100,
-  B10101,
-  B01110,
-  B00100,
-  B11111,
-  B11111,
-  B11111
-};
-// End LCD Custom Characters
-
-void OutputLCD(double voltage, double vol, bool muted);
+// Function Declarations
 uint32_t Wheel(byte WheelPos);
 bool CheckVolume(double volume);
 void receiveSignal();
+void sendVolume(double voltage);
 
 void setup() {
   AudioMemory(12);
@@ -105,28 +56,14 @@ void setup() {
   amp1.gain(1);
   amp2.gain(-1);
   // Initializing Serial connection for debugging
-  Serial.begin(250000);
+  Serial.begin(9600);
+  // Set up the pins
   pinMode(PIN_A13, INPUT); // Signal Read pin
   pinMode(33, INPUT_PULLDOWN); // Mute switch reading pin
-  pinMode(PIN_A16, INPUT); // Volume reading pin
+  pinMode(PIN_A16, OUTPUT); // Volume sending pin
   pinMode(38, INPUT); // SPDIF IN Digital Read Pin
-  pinMode(39, INPUT_PULLDOWN); // Laser Test Reading Pin
+  pinMode(39, INPUT); // Laser Test Reading Pin
   delayMicroseconds(10);
-  // Make custom characters
-  lcd.init();
-  lcd.createChar(0, muted);
-  lcd.createChar(1, unmuted);
-  lcd.createChar(6, volume);
-  lcd.createChar(7, receiving);
-
-  // Splash Screen
-  lcd.backlight();
-  lcd.setCursor(0,0);
-  lcd.print("Receiving Teensy");
-  lcd.setCursor(0,1);
-  lcd.print("FSO White");
-  delay(1000);
-  lcd.clear();
   
   // NeoSlider Initialization
   // This code borrowed from AdaFruit NeoSlider example code
@@ -155,6 +92,7 @@ void setup() {
     while(1) delay(10);
   }
 
+  analogWriteResolution(16);
   Serial.println(F("seesaw started OK!"));
 
   pixels.setBrightness(255);  // half bright
@@ -162,7 +100,7 @@ void setup() {
   // End NeoSlider Initialization
 
   // Digital Read from Laser
-  t1.begin(receiveSignal, 20us);
+  // t1.begin(receiveSignal, 325ns);
 }
 
 void receiveSignal(){
@@ -187,11 +125,16 @@ uint32_t Wheel(byte WheelPos) {
   return seesaw_NeoPixel::Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
 
+void sendVolume(double volume){
+  analogWrite(PIN_A16, volume);
+  //Serial.print("Sending volume: ");
+  //Serial.println(volume);
+}
 
 void loop() {
   // read the NeoSlider potentiometer
-  loopCounter++;
-  double slide_val = seesaw.analogRead(ANALOGIN);
+  int slide_val = seesaw.analogRead(ANALOGIN);
+  sendVolume(slide_val / 1023.0);
   // Serial.println(slide_val);
 
   // Set the color of the LEDs 
@@ -199,53 +142,11 @@ void loop() {
     pixels.setPixelColor(i, Wheel(slide_val / 4));
   }
   pixels.show();
-  // Update LCD every 5 loop iterations
-  if (loopCounter % 5 == 0){
-    analogReadResolution(12);
-    double reading = 0;
-    reading = analogRead(A14);
-    voltage = reading / 1023.0;
-    loopCounter = 0;
-  }
   // Check the volume potentiometer for volume level
-  bool muted = CheckVolume(slide_val);
-  // Doing to LCD Update
-  OutputLCD(voltage, slide_val, muted);
-  
+  CheckVolume(slide_val);
 }
 
-void OutputLCD(double voltage, double volume, bool muted){
-  // Print receiving status on last character of first line
-  lcd.setCursor(15, 0);
-  double inputFreq = spdifIn.getInputFrequency();
-  double actualVolume = volume / 320;
-  if (inputFreq > 43000){
-    lcd.write(7);
-  } else{
-    lcd.print(" ");
-  }
-  // Write Volume mute status and level
-  lcd.setCursor(0, 1);
-  lcd.write(6);
-  if (muted){
-    lcd.write(0);
-  } else{
-    lcd.write(1);
-  }
-  if (20*log10(actualVolume) <= 1){
-    lcd.print(actualVolume, 2);
-  }
-  else{
-    lcd.print(20*log10(actualVolume), 2);
-    if (20*log10(actualVolume) < 10){
-      lcd.setCursor(6, 1);
-      lcd.print(" ");
-    }
-  }
-  lcd.setCursor(10, 1);
-  lcd.print(voltage);
-  lcd.print(" V");
-}
+
 
 
 bool CheckVolume(double volume){
@@ -259,20 +160,15 @@ bool CheckVolume(double volume){
   // Check status of Mute Switch
   if (val == HIGH || volume == 0){
     // Mute switch is on, mute output
-    amp1.gain(0);
-    amp2.gain(0);
+    // amp1.gain(0);
+    // amp2.gain(0);
     // Easter egg :P
-    lcd.setCursor(0,0);
-    if (volume >= 352 && volume <= 354){lcd.print("Poggers");}
-    else{lcd.print("       ");}
     return true;
   }
   else{
     // Mute switch is off, set gain to current amp modifier
-    lcd.setCursor(0,0);
-    lcd.print("       ");
-    // Serial.print("Actual Gain Adj: ");
-    // Serial.println(actualGain);
+    //Serial.print("Actual Gain Adj: ");
+    //Serial.println(actualGain);
     amp1.gain(actualGain);
     amp2.gain(-actualGain);
     return false;
