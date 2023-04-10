@@ -179,13 +179,13 @@ void updateDisplay(int textColor){
   display.setTextColor(textColor, ST77XX_BLACK);
   if (battery.cellPercent() <= 20){
     display.setTextColor(ST77XX_RED);
-    display.drawBitmap(40, 0, epd_bitmap_battery, 64, 40, ST77XX_WHITE);
+    display.drawBitmap(40, 0, epd_bitmap_battery, 64, 40, ST77XX_RED);
   } else if (battery.cellPercent() >= 50){
     display.setTextColor(ST77XX_GREEN);
     display.drawBitmap(40, 0, epd_bitmap_battery, 64, 40, ST77XX_GREEN);
   } else if (battery.cellPercent() < 50 && battery.cellPercent() > 20){
     display.setTextColor(ST77XX_YELLOW);
-    display.drawBitmap(40, 0, epd_bitmap_battery, 64, 40, ST77XX_WHITE);
+    display.drawBitmap(40, 0, epd_bitmap_battery, 64, 40, ST77XX_YELLOW);
   }
   if (textColor == ST77XX_BLACK){display.setTextColor(ST77XX_BLACK);}
   display.setCursor(104,15);
