@@ -11,8 +11,8 @@
 #include <HardwareSerial.h>
 
 // Definitions
-#define d2 GPIO_NUM_2
-#define d1 GPIO_NUM_1
+#define d2 GPIO_NUM_2 // button d2 - power
+#define d1 GPIO_NUM_1 // button d1 - volume
 
 // Declare Interfaces with Battery and Display
 Adafruit_MAX17048 battery;
@@ -22,8 +22,7 @@ Adafruit_ST7789 display = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 bool isMuted = 0;
 bool isOff = 0;
 double volume = 0.0;
-// Keeps track of what cause the previous power-off so that the switch does not keep the screen on
-int powOffCause = 0; 
+ 
 // Function declarations
 bool buttonPressed;
 void buttonInterrupt();
@@ -74,7 +73,7 @@ void setup() {
   // Pin Mode Configuration
   pinMode(d1, INPUT_PULLDOWN); // Button D1
   pinMode(d2, INPUT_PULLDOWN); // Button D2
-  pinMode(A0, OUTPUT); // Power switch detection
+  pinMode(A0, OUTPUT); // Teensy Power
 
   // Turn Teensy on
   digitalWrite(A0, HIGH);
@@ -149,10 +148,8 @@ void loop() {
   }
   // Send mute status to Teensy so it mutes the audio
   if (isMuted){
-    //TeensyComms.println(isMuted);
     digitalWrite(GPIO_NUM_5, HIGH);
   } else{
-    //TeensyComms.println(isMuted);
     digitalWrite(GPIO_NUM_5, LOW);
   }
 
