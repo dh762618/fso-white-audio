@@ -7,10 +7,14 @@
 #include <Adafruit_seesaw.h>
 #include <SPI.h>
 #include <./symbols.h>
+#include <Adafruit_BusIO_Register.h>
+#include <HardwareSerial.h>
 
 // Definitions
 #define d2 GPIO_NUM_2
 #define d1 GPIO_NUM_1
+// #define TeensyComms Serial1
+#define compSerial Serial
 
 // Declare Interfaces with Battery and Display
 Adafruit_MAX17048 battery;
@@ -19,6 +23,7 @@ Adafruit_ST7789 display = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 // Global Vars
 bool isMuted = 0;
 bool isOff = 0;
+double volume = 0;
 // Keeps track of what cause the previous power-off so that the switch does not keep the screen on
 int powOffCause = 0; 
 // Function declarations
@@ -30,7 +35,16 @@ void testfastlines(uint16_t color);
 void showIntro();
 
 void setup() {
-  Serial.begin(9600);
+  Serial1.begin(9600);
+  // , SERIAL_8N1, GPIO_NUM_2, GPIO_NUM_1);
+  //, false, 20000UL, (uint8_t)112U)
+
+  //TeensyComms.setRX(GPIO_NUM_7);
+  //TeensyComms.setTX(GPIO_NUM_8);
+
+  // pinMode(2, INPUT);
+  // pinMode(1, OUTPUT); 
+
 
   //Set up the battery that is connected to the feather
   if (!battery.begin()) {
@@ -62,6 +76,10 @@ void setup() {
   pinMode(d1, INPUT_PULLDOWN); // Button D1
   pinMode(d2, INPUT_PULLDOWN); // Button D2
   pinMode(A0, OUTPUT); // Power switch detection
+  pinMode(GPIO_NUM_5, OUTPUT); // mute status
+  pinMode(GPIO_NUM_8, INPUT); // volume level
+
+  analogReadResolution(16);
 
   // Turn Teensy on
   digitalWrite(A0, 3.3);
@@ -161,15 +179,20 @@ void loop() {
   }
   // Send mute status to Teensy so it mutes the audio
   if (isMuted){
-    digitalWrite(5, HIGH);
+    //TeensyComms.println(isMuted);
+    digitalWrite(GPIO_NUM_5, HIGH);
   } else{
-    digitalWrite(5, LOW);
+    //TeensyComms.println(isMuted);
+    digitalWrite(GPIO_NUM_5, LOW);
   }
+
   // Print information to display
   updateDisplay(ST77XX_WHITE);
   delay(500);
   // Clear screen for next print
-  display.fillScreen(ST77XX_BLACK);
+  display.fillRect(104, 15, 100, 15, ST77XX_BLACK);
+  display.fillRect(104, 65, 100, 15, ST77XX_BLACK);
+  display.fillRect(55, 60, 31, 30, ST77XX_BLACK);
 }
 
 // Updates the TFT display to show current information and battery assignments
@@ -198,7 +221,10 @@ void updateDisplay(int textColor){
     display.drawBitmap(0,60,epd_bitmap_volumemuted, 31, 24, ST77XX_WHITE);
   }
   else {display.drawBitmap(0,60,epd_bitmap_volumeon, 31, 24, ST77XX_WHITE);}
+  
+  // separate buttons on display
   display.drawLine(35, 0, 35, 135, ST77XX_WHITE);
+  
   // Volume level management
   if (isMuted){
     display.drawBitmap(55,60,epd_bitmap_volumemuted, 31, 24, ST77XX_RED);
@@ -207,8 +233,9 @@ void updateDisplay(int textColor){
     display.drawBitmap(55,60,epd_bitmap_volumeon, 31, 24, ST77XX_WHITE);
     display.setTextColor(ST77XX_WHITE);
   }
+
   // Get the volume from the Teensy
-  double volume = getVolume();
+  volume = getVolume();
   display.setCursor(104,66);
   display.print(volume);
 
@@ -218,7 +245,17 @@ void updateDisplay(int textColor){
 
 // Read the reported volume from the Teensy to be displayed on TFT
 double getVolume(){
-  analogReadResolution(16);
-  int vol = analogRead(A1);
-  return vol / 320.0;
+  int vol = 0;
+  double retVol;
+  // if (TeensyComms.available() > 0)
+  // {
+  //   vol = TeensyComms.parseInt();
+  //   compSerial.print(vol);
+  // }
+
+  vol = analogRead(GPIO_NUM_8);
+  retVol = vol/1023;
+  compSerial.println(vol);
+
+  return retVol*10;
 }
