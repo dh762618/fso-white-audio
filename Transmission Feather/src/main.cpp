@@ -71,17 +71,6 @@ void setup() {
 //////////////////////////////////////////////////////////////////
 void loop() {
   // put your main code here, to run repeatedly:
-  // display.fillScreen(ST77XX_BLACK);
-  // display.setCursor(0,0);
-  // display.setTextColor(ST77XX_WHITE);
-  // display.setTextWrap(true);
-  // display.print("Batt Level: ");
-  // display.print(battery.cellPercent());
-  // display.println(" %");
-  // display.print("Batt Voltage: ");
-  // display.print(battery.cellVoltage());
-  // display.println(" V");
-
   // Check power switch and buttons
   // Check to see if the physical switch has been pressed --
   // If D1 is pressed, only the Feather is turned off
@@ -104,53 +93,63 @@ void loop() {
       digitalWrite(TFT_BACKLITE, HIGH);
       digitalWrite(TFT_I2C_POWER, HIGH);
       digitalWrite(A0, 3.3);
+      display.fillScreen(ST77XX_BLACK);
       displayIntro();
       isOff = 0;
     }
   }
-  // Print information to display
+
+  // output display
   printDisplay();
-  delay(500);
-  // Clear screen for next print
-  display.fillScreen(ST77XX_BLACK);
+  delay(100);
+
+  // Clear the battery percentage 
+  display.fillRect(104, 15, 100, 15, ST77XX_BLACK);
 }
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 void displayIntro()
 {
-  display.setCursor(0,0);
+  // display the team name in the middle of the display
+  display.setCursor(0,45);
   display.setTextColor(ST77XX_WHITE);
   display.setTextWrap(false);
-  display.print("FSO White Team\n");
-  display.print("Transmission Feather");
+  display.println("   FSO White Team");
+  display.println("Transmission Feather");
+  display.println("    April 2023");
   delay(2000);
   display.fillScreen(ST77XX_BLACK);
 
-  //void drawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t h, uint16_t color);
+  // void drawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t h, uint16_t color);
+  // print Dan's name and picture then clear the screen after 2 seconds
   display.drawBitmap(0,0, epd_bitmap_Dan_Allwine_300x450, 240, 135, ST77XX_WHITE);
   display.setCursor(60, 120);
   display.print("Dan Allwine");
   delay(2000);
   display.fillScreen(ST77XX_BLACK);
-
+  
+  // print Daniel's name and picture
   display.drawBitmap(0,0, epd_bitmap_Daniel, 240, 120, ST77XX_WHITE);
   display.setCursor(60, 120);
   display.print("Daniel Cobb");
   delay(2000);
   display.fillScreen(ST77XX_BLACK);
 
+  // print Remi's name and picture
   display.drawBitmap(0,0, epd_bitmap_Remi, 240, 120, ST77XX_WHITE);
   display.setCursor(60, 120);
   display.print("Remi Fordyce");
   delay(2000);
   display.fillScreen(ST77XX_BLACK);
 
+  // print Devin's name and picture
   display.drawBitmap(0,0, epd_bitmap_Devin, 240, 120, ST77XX_WHITE);
   display.setCursor(60, 120);
   display.print("Devin Holt");
   delay(2000);
   display.fillScreen(ST77XX_BLACK);
 
+  // print Carson's name and picture
   display.drawBitmap(0,0, epd_bitmap_Carson, 240, 120, ST77XX_WHITE);
   display.setCursor(60, 120);
   display.print("Carson Magni");
@@ -190,5 +189,5 @@ void printDisplay(){
   display.drawBitmap(0,110, epd_bitmap_power, 25, 25, ST77XX_WHITE);
   
   // transmission signal indicator
-  //display.drawBitmap(190, 85, epd_bitmap_, 50, 50, ST77XX_WHITE);
+  display.drawBitmap(200, 100, epd_bitmap_transmission, 40, 40, ST77XX_WHITE);
 }

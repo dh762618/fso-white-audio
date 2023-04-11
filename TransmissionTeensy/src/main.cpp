@@ -19,6 +19,7 @@
 #define  DEFAULT_I2C_ADDR 0x30
 #define  ANALOGIN   18
 #define  NEOPIXELOUT 14
+#define  
 
 // Declaring the constructor for the NeoSlider gain
 Adafruit_seesaw seesaw;
