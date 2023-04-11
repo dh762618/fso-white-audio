@@ -8,19 +8,19 @@
 #include <SPI.h>
 #include <./symbols.h>
 
-// Definitions
-#define d2 GPIO_NUM_2
-#define d1 GPIO_NUM_1
+// Definitions and Global Vars
+#define d2 GPIO_NUM_2 // Button D2
+#define d1 GPIO_NUM_1 // Button D1
+// Global Vars
+bool isMuted = 0;
+bool isOff = 0;
+
 
 // Declare Interfaces with Battery and Display
 Adafruit_MAX17048 battery;
 Adafruit_ST7789 display = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
-// Global Vars
-bool isMuted = 0;
-bool isOff = 0;
-// Keeps track of what cause the previous power-off so that the switch does not keep the screen on
-int powOffCause = 0; 
+
 // Function declarations
 bool buttonPressed;
 void buttonInterrupt();
@@ -28,6 +28,7 @@ void updateDisplay(int textColor);
 double getVolume();
 void testfastlines(uint16_t color);
 void showIntro();
+void powerManagement();
 
 void setup() {
   Serial.begin(9600);
@@ -61,10 +62,10 @@ void setup() {
   // Pin Mode Configuration
   pinMode(d1, INPUT_PULLDOWN); // Button D1
   pinMode(d2, INPUT_PULLDOWN); // Button D2
-  pinMode(A0, OUTPUT); // Power switch detection
+  pinMode(A0, OUTPUT); // Teensy Power
 
   // Turn Teensy on
-  digitalWrite(A0, 3.3);
+  digitalWrite(A0, HIGH);
   showIntro();
 }
 
@@ -128,33 +129,8 @@ void testfastlines(uint16_t color) {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  // Check power switch and buttons
-  // Check to see if the physical switch has been pressed --
-  // If D2 is pressed, only the Feather is turned off
-  if (digitalRead(d2)){
-    if (!isOff){
-      // Print that we are turning the power off to the Feather
-      display.fillScreen(ST77XX_BLACK);
-      display.drawBitmap(5, 60, epd_bitmap_power, 25, 25, ST77XX_WHITE);
-      display.setCursor(30, 65);
-      display.setTextColor(ST77XX_WHITE);
-      display.print(" Powering Off...");
-      delay(4200);
-      // Turn off TFT to save power
-      digitalWrite(A0, 0);
-      digitalWrite(TFT_BACKLITE, LOW);
-      digitalWrite(TFT_I2C_POWER, LOW);
-      isOff = 1;
-    } else {
-      // Turn TFT back on
-      digitalWrite(TFT_BACKLITE, HIGH);
-      digitalWrite(TFT_I2C_POWER, HIGH);
-      digitalWrite(A0, 3.3);
-      showIntro();
-      isOff = 0;
-    }
-  }
+  // Check to see if the power button was pressed
+  powerManagement();
   // Check to see if mute button is pressed
   if (digitalRead(d1)){
     isMuted = !isMuted;
@@ -170,6 +146,35 @@ void loop() {
   delay(500);
   // Clear screen for next print
   display.fillScreen(ST77XX_BLACK);
+}
+
+// Checks the power switch and changes the power state if it is pressed
+void powerManagement(){
+  // Check power switch
+  if (digitalRead(d2)){
+    if (!isOff){
+      // Print that we are turning the power off to the Feather
+      display.fillScreen(ST77XX_BLACK);
+      display.drawBitmap(5, 60, epd_bitmap_power, 25, 25, ST77XX_WHITE);
+      display.setCursor(30, 65);
+      display.setTextColor(ST77XX_WHITE);
+      display.print(" Powering Off...");
+      delay(4200);
+      // Turn off TFT to save power
+      digitalWrite(A0, LOW);
+      digitalWrite(TFT_BACKLITE, LOW);
+      digitalWrite(TFT_I2C_POWER, LOW);
+      isOff = 1;
+    } else {
+      // Turn TFT back on
+      digitalWrite(TFT_BACKLITE, HIGH);
+      digitalWrite(TFT_I2C_POWER, HIGH);
+      digitalWrite(A0, HIGH);
+      // Show the power on intro again
+      showIntro();
+      isOff = 0;
+    }
+  }
 }
 
 // Updates the TFT display to show current information and battery assignments
