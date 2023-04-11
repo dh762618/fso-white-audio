@@ -10,10 +10,7 @@
 #include <bitMap.h>
 
 // definitions
-#define  ANALOGIN 18
-#define  NEOPIXELOUT 14
-#define  DEFAULT_I2C_ADDR 0x30
-#define  d2 GPIO_NUM_2
+#define  d2 GPIO_NUM_2 // power button d2
 
 // Declare Interfaces with Battery and Display
 Adafruit_MAX17048 battery;
@@ -25,9 +22,10 @@ bool isOff = 0;
 // Function declarations
 void displayIntro();
 void printDisplay();
+void powerManagement();
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
 
   display.setCursor(0,0);
 
@@ -60,9 +58,10 @@ void setup() {
   // Pin Mode Configuration
   pinMode(d2, INPUT_PULLDOWN); // Button D2
   pinMode(A0, OUTPUT); // Power switch detection
+  pinMode(A0, OUTPUT); // Teensy Power
 
   // Turn Teensy on
-  digitalWrite(A0, 3.3);
+  digitalWrite(A0, HIGH);
 
   displayIntro();
 
@@ -71,34 +70,10 @@ void setup() {
 //////////////////////////////////////////////////////////////////
 void loop() {
   // put your main code here, to run repeatedly:
-  // Check power switch and buttons
-  // Check to see if the physical switch has been pressed --
-  // If D1 is pressed, only the Feather is turned off
-  if (digitalRead(d2)){
-    if (!isOff){
-      // Print that we are turning the power off to the Feather
-      display.fillScreen(ST77XX_BLACK);
-      display.drawBitmap(5, 60, epd_bitmap_power, 25, 25, ST77XX_WHITE);
-      display.setCursor(30, 65);
-      display.setTextColor(ST77XX_WHITE);
-      display.print(" Powering Off...");
-      delay(4200);
-      // Turn off TFT to save power
-      digitalWrite(A0, 0);
-      digitalWrite(TFT_BACKLITE, LOW);
-      digitalWrite(TFT_I2C_POWER, LOW);
-      isOff = 1;
-    } else {
-      // Turn TFT back on
-      digitalWrite(TFT_BACKLITE, HIGH);
-      digitalWrite(TFT_I2C_POWER, HIGH);
-      digitalWrite(A0, 3.3);
-      display.fillScreen(ST77XX_BLACK);
-      displayIntro();
-      isOff = 0;
-    }
-  }
 
+  // check if the power button is pressed
+  powerManagement();
+  
   // output display
   printDisplay();
   delay(100);
@@ -162,16 +137,27 @@ void printDisplay(){
   // Battery management
   display.setCursor(100, 0);
   display.setTextColor(ST77XX_BLACK);
-  if (battery.cellPercent() <= 20){
+
+  // if the battery is less than 20% change the battery and text to red
+  if (battery.cellPercent() <= 20)
+  {
     display.setTextColor(ST77XX_RED);
     display.drawBitmap(40, 0, epd_bitmap_battery, 64, 40, ST77XX_RED);
-  } else if (battery.cellPercent() >= 50){
+  } 
+  // if the battery is greater than 50% change the battery and text to green
+  else if (battery.cellPercent() >= 50)
+  {
     display.setTextColor(ST77XX_GREEN);
     display.drawBitmap(40, 0, epd_bitmap_battery, 64, 40, ST77XX_GREEN);
-  } else if (battery.cellPercent() < 50 && battery.cellPercent() > 20){
+  } 
+  // if the battery is between 20-60% change the battery and text to yellow
+  else if (battery.cellPercent() < 60 && battery.cellPercent() > 20)
+  {
     display.setTextColor(ST77XX_YELLOW);
     display.drawBitmap(40, 0, epd_bitmap_battery, 64, 40, ST77XX_YELLOW);
   }
+
+  // once the battery and text color is changed display the actual battery percent
   display.setCursor(104,15);
   display.print(battery.cellPercent());
   display.println("%");
@@ -190,4 +176,34 @@ void printDisplay(){
   
   // transmission signal indicator
   display.drawBitmap(200, 100, epd_bitmap_transmission, 40, 40, ST77XX_WHITE);
+}
+///////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+void powerManagement()
+{
+  // Check to see if the physical switch has been pressed
+  if (digitalRead(d2)){
+    if (!isOff){
+      // Print that we are turning the power off to the Feather
+      display.fillScreen(ST77XX_BLACK);
+      display.drawBitmap(5, 60, epd_bitmap_power, 25, 25, ST77XX_WHITE);
+      display.setCursor(30, 65);
+      display.setTextColor(ST77XX_WHITE);
+      display.print(" Powering Off...");
+      delay(4200);
+      // Turn off TFT to save power
+      digitalWrite(A0, LOW);
+      digitalWrite(TFT_BACKLITE, LOW);
+      digitalWrite(TFT_I2C_POWER, LOW);
+      isOff = 1;
+    } else {
+      // Turn TFT back on
+      digitalWrite(TFT_BACKLITE, HIGH);
+      digitalWrite(TFT_I2C_POWER, HIGH);
+      digitalWrite(A0, HIGH);
+      display.fillScreen(ST77XX_BLACK);
+      displayIntro();
+      isOff = 0;
+    }
+  }
 }
