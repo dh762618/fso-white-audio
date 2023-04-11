@@ -21,6 +21,7 @@ Adafruit_ST7789 display = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 // Global Vars
 bool isMuted = 0;
 bool isOff = 0;
+double volume = 0.0;
 // Keeps track of what cause the previous power-off so that the switch does not keep the screen on
 int powOffCause = 0; 
 // Function declarations
@@ -253,7 +254,7 @@ double getVolume(){
 
   vol = analogRead(GPIO_NUM_8);
   retVol = vol/1023;
-  compSerial.println(vol);
+  //compSerial.println(vol);
 
   return retVol*10;
 }
