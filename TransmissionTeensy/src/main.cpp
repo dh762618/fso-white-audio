@@ -18,8 +18,7 @@
 
 #define  DEFAULT_I2C_ADDR 0x30
 #define  ANALOGIN   18
-#define  NEOPIXELOUT 14
-#define  
+#define  NEOPIXELOUT 14 
 
 // Declaring the constructor for the NeoSlider gain
 Adafruit_seesaw seesaw;
@@ -68,16 +67,24 @@ void setup() {
   sgtl5000_1.inputSelect(myInput);
   sgtl5000_1.volume(0.7);
 
+  // test code pin mode
   pinMode(39, OUTPUT);
-  pinMode(38, INPUT_PULLUP);
-  pinMode(37, OUTPUT);
+
+  // pin modes from PAD's
+  pinMode(26, INPUT); // 3.5 pad
+  pinMode(27, INPUT); // XLR pad
+
+  // pin modes to LED's
+  pinMode(28, OUTPUT); // 3.5 LED
+  pinMode(29, OUTPUT); // XLR LED
 
   // Default Pin Values
-  digitalWrite(37, LOW);
+  digitalWrite(28, LOW);
+  digitalWrite(29, LOW);
   
   // set default gain
-  // int gain = 75;
-  // amp1.gain(gain);
+  int gain = 1;
+  amp1.gain(gain);
   
   // Implement filter
   biquad1.setLowpass(0, 10000, 0.707);
@@ -136,9 +143,7 @@ uint32_t Wheel(byte WheelPos) {
 }
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
-elapsedMillis volmsec=0;
-////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////
+// used for test code
 void callback(){
   if (laserState == LOW)
   {
@@ -151,16 +156,7 @@ void callback(){
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
 void loop() {
-  // Every 50 ms, adjust the volume
-  if (volmsec > 50) {
-    float vol = analogRead(15);
-    vol = vol / 1023.0;
-    //audioShield.volume(vol); // <-- uncomment if you have the optional
-    volmsec = 0;               //     volume pot on your audio shield
-  }
-
   // read the potentiometer
-  //loopCounter++;
   double slide_val = seesaw.analogRead(ANALOGIN);
   Serial.println(slide_val);
 
@@ -172,43 +168,37 @@ void loop() {
   //Update the gain
   GainRegulation(slide_val);
 
-  // Output will be displayed on reverse TFT Feather
-  // Code needs added here to interface with the feather instead of doing LCD stuff
-  // // Update the LCD Screen
-  // LCDOutput(slide_val);
-
-  // Read the voltage on the 'L' PAD to determine if it is on
+  // Read the voltage on the 'L' PAD from the 3.5mm headphone port to determine if it is on
   // Allows for LED indicator 
-  int LReading = analogRead(38);
-  if (LReading > 400){
-    digitalWrite(37, HIGH);
+  int headphonePad = analogRead(26);
+  Serial.print("Headphone Pad: ");
+  Serial.println(headphonePad);
+  if (headphonePad > 400){
+    digitalWrite(28, HIGH);
   } else{
-    digitalWrite(37, LOW);
+    digitalWrite(28, LOW);
   }
 
-  Serial.print("Voltage on L PAD: ");
-  Serial.println(LReading);
+  // Read the voltage on the 'L' PAD from the XLR port to determine if it is on
+  // Allows for LED indicator 
+  int xlrPad = analogRead(27);
+  Serial.print("XLR Pad: ");
+  Serial.println(xlrPad);
+  if (xlrPad > 400){
+    digitalWrite(29, HIGH);
+  } else{
+    digitalWrite(29, LOW);
+  }
+
+  // serial prints for debugging
+  Serial.print("Voltage on XLR PAD: ");
+  Serial.println(xlrPad);
+
+  Serial.print("Voltage on 3.5mm PAD: ");
+  Serial.println(headphonePad);
 
   delay(50);
 }
-////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////
-// void LCDOutput(double display_gain)
-// {
-//   display_gain += 1.8;
-//   lcd.setCursor(15,0);
-//   lcd.write(0);
-//   lcd.setCursor(7, 1);
-//   lcd.print("+");
-//   lcd.print(20*log10(display_gain), 2);
-  
-//   if (20*log10(display_gain) < 10){
-//     lcd.setCursor(13, 1);
-//     lcd.print(" ");
-//   }
-//   lcd.setCursor(13, 1);
-//   lcd.print(" dB");
-// }
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 void GainRegulation(double gainValue)
