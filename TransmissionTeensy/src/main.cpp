@@ -29,6 +29,12 @@ IntervalTimer mytimer;
 int laserState = LOW;
 TeensyTimerTool::PeriodicTimer t1(TeensyTimerTool::GPT2);
 
+// Global Variables
+// Test code variables
+int counter = 0;
+int halfWave = 0;
+int prevHigh = 0;
+
 // From Teensy Audio Library
 // GUItool: begin automatically generated code4
 AudioFilterBiquad        biquad1;
@@ -128,7 +134,7 @@ void setup() {
   pixels.show(); // Initialize all pixels to 'off'
 
   // Test code that pulses 1s and 0s repeatedly at ~50 kHz
-  //t1.begin(callback, 1us);
+  t1.begin(callback, 156.25ns);
   pinMode(39, OUTPUT);
 }
 ////////////////////////////////////////////////////////////////////////
@@ -152,12 +158,45 @@ uint32_t Wheel(byte WheelPos) {
 ////////////////////////////////////////////////////////////////////////
 // used for test code
 void callback(){
-  if (laserState == LOW)
-  {
-    laserState = HIGH;
-  } else{
-    laserState = LOW;
+  switch(counter){
+    case 0:
+      laserState = HIGH;
+      break;
+    case 2:
+      laserState = LOW;
+      break;
+    case 3:
+      laserState = HIGH;
+      break;
+    case 5:
+      laserState = LOW;
+      break;
+    case 6:
+      laserState = HIGH;
+      break;
+    case 8:
+      laserState = LOW;
+      break;
+    case 9:
+      laserState = HIGH;
+      break;
+    case 11:
+      laserState = LOW;
+      break;
+    case 12:
+      laserState = HIGH;
+      break;
+    case 16:
+      laserState = LOW;
+      break;
+    case 17:
+      laserState = HIGH;
+      break;
+    case 18:
+      laserState = LOW;  
+      counter = 0;  
   }
+  counter++;
   digitalWriteFast(39, laserState);
 }
 /////////////////////////////////////////////////////////////////////////
