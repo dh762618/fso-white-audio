@@ -78,9 +78,16 @@ void setup() {
   pinMode(28, OUTPUT); // 3.5 LED
   pinMode(29, OUTPUT); // XLR LED
 
+  // pin modes to PAD status checking
+  pinMode(30, OUTPUT); // 3.5 LED
+  pinMode(31, OUTPUT); // XLR LED
+
   // Default Pin Values
   digitalWrite(28, LOW);
   digitalWrite(29, LOW);
+  digitalWrite(30, HIGH);
+  digitalWrite(31, HIGH);
+  
   
   // set default gain
   int gain = 1;
@@ -170,10 +177,11 @@ void loop() {
 
   // Read the voltage on the 'L' PAD from the 3.5mm headphone port to determine if it is on
   // Allows for LED indicator 
-  int headphonePad = analogRead(26);
+  int headphonePad = digitalRead(26);
   Serial.print("Headphone Pad: ");
   Serial.println(headphonePad);
-  if (headphonePad > 400){
+  // Check 3.5mm PAD voltage and change LED status
+  if (headphonePad){
     digitalWrite(28, HIGH);
   } else{
     digitalWrite(28, LOW);
@@ -181,10 +189,11 @@ void loop() {
 
   // Read the voltage on the 'L' PAD from the XLR port to determine if it is on
   // Allows for LED indicator 
-  int xlrPad = analogRead(27);
+  int xlrPad = digitalRead(27);
   Serial.print("XLR Pad: ");
   Serial.println(xlrPad);
-  if (xlrPad > 400){
+  // Check XLR PAD voltage and change LED status
+  if (xlrPad){
     digitalWrite(29, HIGH);
   } else{
     digitalWrite(29, LOW);
