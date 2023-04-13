@@ -85,8 +85,8 @@ void setup() {
   pinMode(29, OUTPUT); // XLR LED
 
   // pin modes to PAD status checking
-  pinMode(30, OUTPUT); // 3.5 LED
-  pinMode(31, OUTPUT); // XLR LED
+  pinMode(30, OUTPUT); // 3.5 pad
+  pinMode(31, OUTPUT); // XLR pad
 
   // Default Pin Values
   digitalWrite(28, LOW);
