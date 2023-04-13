@@ -30,23 +30,22 @@ int laserState = LOW;
 TeensyTimerTool::PeriodicTimer t1(TeensyTimerTool::GPT2);
 
 // Global Variables
-// Test code variables
-int counter = 0;
-int halfWave = 0;
-int prevHigh = 0;
+int counter = 0; // Counter for test code
 
 // From Teensy Audio Library
 // GUItool: begin automatically generated code4
 AudioFilterBiquad        biquad1;
 AudioInputI2S            i2s1;           //xy=200,69
 AudioOutputSPDIF3        spout1;
-AudioOutputI2S           i2s2;           //xy=365,94
 AudioAmplifier           amp1;
+AudioOutputI2S           i2sOut;
 AudioConnection          patchCord1(i2s1, 0, amp1, 0);
-AudioConnection          patchCord3(amp1, 0, biquad1, 0);
-AudioConnection          patchCord5(biquad1, 0, i2s2, 0);
-AudioConnection          patchCord7(biquad1, 0, spout1, 0);
+AudioConnection          patchCord2(i2s1, 1, amp1, 1);
+//AudioConnection        patchCord3(amp1, 0, biquad1, 0);
+AudioConnection          patchCord7(amp1, 0, spout1, 0);
+AudioConnection          patchCord8(amp1, 0, i2sOut, 0);
 AudioControlSGTL5000     sgtl5000_1;     //xy=302,184
+
 // GUItool: end automatically generated code
 
 // possibly touch buttons for sound effects
@@ -66,13 +65,12 @@ void callback();
 void setup() {
   // Audio connections require memory to work.  For more
   // detailed information, see the MemoryAndCpuUsage example
-  AudioMemory(12);
+  AudioMemory(20);
 
   // Enable the audio shield, select input, and enable output
   sgtl5000_1.enable();
   sgtl5000_1.inputSelect(myInput);
   sgtl5000_1.volume(0.7);
-
   // test code pin mode
   pinMode(39, OUTPUT);
 
@@ -100,7 +98,7 @@ void setup() {
   amp1.gain(gain);
   
   // Implement filter
-  biquad1.setLowpass(0, 10000, 0.707);
+  // biquad1.setLowpass(0, 10000, 0.707);
 
   // Initialize the seesaw neopixel slider
   if (!seesaw.begin(DEFAULT_I2C_ADDR)) {
@@ -127,14 +125,11 @@ void setup() {
     Serial.println("seesaw pixels not found!");
     while(1) delay(10);
   }
-
-  Serial.println(F("seesaw started OK!"));
-
   pixels.setBrightness(255);  // half bright
   pixels.show(); // Initialize all pixels to 'off'
 
   // Test code that pulses 1s and 0s repeatedly at ~50 kHz
-  t1.begin(callback, 156.25ns);
+  //t1.begin(callback, 156.25ns);
   pinMode(39, OUTPUT);
 }
 ////////////////////////////////////////////////////////////////////////
@@ -251,7 +246,7 @@ void loop() {
 ////////////////////////////////////////////////////////////////////////
 void GainRegulation(double gainValue)
 {
-  double actualGain = gainValue + 1.8;
+  double actualGain = gainValue + 1;
   amp1.gain(actualGain);
   Serial.print("Actual Gain: ");
   Serial.println(actualGain);

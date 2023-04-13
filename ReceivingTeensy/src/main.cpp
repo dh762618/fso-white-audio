@@ -33,13 +33,17 @@ seesaw_NeoPixel pixels = seesaw_NeoPixel(4, NEOPIXELOUT, NEO_GRB + NEO_KHZ800);
 // Teensy Audio Library
 // GUItool: begin automatically generated code
 AsyncAudioInputSPDIF3    spdifIn;   //xy=335,357
+AudioInputI2S            i2s1;
 AudioAmplifier           amp1;           //xy=540,337
 AudioAmplifier           amp2;           //xy=572,378
-AudioOutputPT8211        pt8211_1;       //xy=769,343
+AudioOutputI2S           pt8211_1;       //xy=769,343
+AudioConnection          patchCord5(i2s1,0,amp1,0);
+AudioConnection          patchCord6(i2s1,0,amp2,0);
 AudioConnection          patchCord1(spdifIn, 0, amp1, 0);
 AudioConnection          patchCord2(spdifIn, 0, amp2, 0);
 AudioConnection          patchCord3(amp1, 0, pt8211_1, 0);
 AudioConnection          patchCord4(amp2, 0, pt8211_1, 1);
+AudioControlSGTL5000     sgtl5000_1;
 // GUItool: end automatically generated code
 
 
@@ -55,6 +59,9 @@ void setup() {
   // Setting default gains
   amp1.gain(1);
   amp2.gain(-1);
+  sgtl5000_1.enable();
+  sgtl5000_1.inputSelect(AUDIO_INPUT_LINEIN);
+  sgtl5000_1.volume(0.7);
   // Initializing Serial connection for debugging
   Serial.begin(9600);
   // Set up the pins
@@ -160,9 +167,8 @@ bool CheckVolume(double volume){
   // Check status of Mute Switch
   if (val == HIGH || volume == 0){
     // Mute switch is on, mute output
-    // amp1.gain(0);
-    // amp2.gain(0);
-    // Easter egg :P
+    amp1.gain(0);
+    amp2.gain(0);
     return true;
   }
   else{
