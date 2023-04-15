@@ -2,14 +2,16 @@
 #include "ADC_util.h"
 #include <SerialFlash.h>
 
-// Definitions
+// Definitions of Constants
 #define PINS 18
 #define DIG_ADC_0_PINS 10
 #define DIG_ADC_1_PINS 10
 #define PINS_DIFF 0
+#define ADC_READ_PIN 41 // Which pin the ADC will read
+#define ADC_OUT_PIN 37 // Which pin PWM will output to
 // Change these values to alter the audio
-#define RESOLUTION 10
-#define FREQUENCY 44100
+#define RESOLUTION 10 // Resolution of ADC and analogRead
+#define FREQUENCY 44100 // Frequency of PWM
 
 // Setting up the ADC Pins
 uint8_t adc_pins_dig_ADC_0[] = {A0, A1, A2, A3, A4, A5, A6, A7, A8, A9};
@@ -19,11 +21,9 @@ const uint32_t num_samples = 10000;
 
 ADC *adc = new ADC();
 
-// Definitions
-#define ADC_READ_PIN 41
-#define ADC_OUT_PIN 37
 
 void setup(){
+    // Set up the ADC
     Serial.begin(9600);
     adc->adc0->setResolution(RESOLUTION);
     adc->adc0->setConversionSpeed(ADC_CONVERSION_SPEED::HIGH_SPEED);
