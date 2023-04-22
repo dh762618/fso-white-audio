@@ -21,8 +21,11 @@ Adafruit_ST7789 display = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 // Global Vars
 bool isMuted = 0;
 bool isOff = 0;
-double volume = 0.0;
- 
+float volume = 0.0;
+float prev_percent = 0; 
+float prev_volume = 0;
+int prev_mute = 0;
+
 // Function declarations
 bool buttonPressed;
 void buttonInterrupt();
@@ -152,14 +155,24 @@ void loop() {
   } else{
     digitalWrite(GPIO_NUM_5, LOW);
   }
+  // Clear screen for next print if needed
+  // Volume Level Clear
+  display.fillRect(104, 65, 100, 15, ST77XX_BLACK);
+  // Battery Percentage Clear
+  if (battery.cellPercent() != prev_percent) {display.fillRect(104, 15, 100, 15, ST77XX_BLACK);}
+  prev_percent = battery.cellPercent();
+  // Volume Logo Clear
+  if (isMuted != prev_mute) {
+    display.fillRect(104, 65, 100, 15, ST77XX_BLACK);
+    display.fillRect(55, 60, 31, 30, ST77XX_BLACK);
+    display.fillRect(0, 60, 31, 24, ST77XX_BLACK);
+  }
 
   // Print information to display
   updateDisplay(ST77XX_WHITE);
-  delay(500);
-  // Clear screen for next print
-  display.fillRect(104, 15, 100, 15, ST77XX_BLACK);
-  display.fillRect(104, 65, 100, 15, ST77XX_BLACK);
-  display.fillRect(55, 60, 31, 30, ST77XX_BLACK);
+  prev_mute = isMuted;
+  prev_volume = volume;
+  delay(100);
 }
 
 // Checks the power switch and changes the power state if it is pressed

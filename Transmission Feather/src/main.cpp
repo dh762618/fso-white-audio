@@ -8,6 +8,7 @@
 #include <seesaw_neopixel.h>
 #include <SPI.h>
 #include <bitMap.h>
+#include <ESP32SPISlave.h>
 
 // definitions
 #define  d2 GPIO_NUM_2 // power button d2
@@ -18,11 +19,14 @@ Adafruit_ST7789 display = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
 // global variable to determine if the device is "off" or not
 bool isOff = 0;
+int slider_val = 0;
+float prev_percent = 0;
 
 // Function declarations
 void displayIntro();
 void printDisplay();
 void powerManagement();
+void receiveSlider(int slider_val);
 
 void setup() {
   Serial.begin(9600);
@@ -63,6 +67,9 @@ void setup() {
   // Turn Teensy on
   digitalWrite(A0, HIGH);
 
+  // I2C Setup Code
+  Wire.begin(0x25);
+  Wire.onReceive(receiveSlider);
   displayIntro();
 
 }
@@ -74,12 +81,15 @@ void loop() {
   // check if the power button is pressed
   powerManagement();
   
+  // Clear the battery percentage 
+  if (battery.cellPercent() != prev_percent){
+    display.fillRect(104, 15, 100, 15, ST77XX_BLACK);
+  }
+
   // output display
   printDisplay();
-  delay(100);
 
-  // Clear the battery percentage 
-  display.fillRect(104, 15, 100, 15, ST77XX_BLACK);
+  prev_percent = battery.cellPercent();
 }
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -133,6 +143,11 @@ void displayIntro()
 }
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
+
+void receiveSlider(int data){
+  slider_val = data;
+}
+
 void printDisplay(){
   // Battery management
   display.setCursor(100, 0);
@@ -162,11 +177,18 @@ void printDisplay(){
   display.print(battery.cellPercent());
   display.println("%");
 
+  // Receive sliderVal from Teensy
+  while (Wire.available()){
+    slider_val = Wire.read();
+  }
+
   // display pre amp gain
   display.drawBitmap(45, 50, epd_bitmap_gain, 40, 40, ST77XX_WHITE);
   display.setCursor(95, 60);
   display.setTextColor(ST77XX_WHITE);
-  display.print("+    dB");
+  display.print("+ ");
+  display.print(slider_val);
+  display.print(" dB");
 
   // separate power button from battery and gain functions
   display.drawLine(35, 0, 35, 135, ST77XX_WHITE);
