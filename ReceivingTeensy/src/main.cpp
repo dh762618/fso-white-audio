@@ -48,8 +48,6 @@ AudioConnection          patchCord4(amp2, 0, pt8211_1, 1);
 AudioControlSGTL5000     sgtl5000_1;
 // GUItool: end automatically generated code
 
-
-
 // Function Declarations
 uint32_t Wheel(byte WheelPos);
 bool CheckVolume(double volume);
@@ -64,6 +62,11 @@ void setup() {
   sgtl5000_1.enable();
   sgtl5000_1.inputSelect(AUDIO_INPUT_LINEIN);
   sgtl5000_1.volume(0.7);
+
+  // create surround sound from mono
+  sgtl5000_1.audioPostProcessorEnable();
+  sgtl5000_1.surroundSoundEnable();
+
   // Initializing Serial connection for debugging
   Serial.begin(9600);
   // Set up the pins
@@ -110,8 +113,12 @@ void setup() {
 
   // Digital Read from Laser
   // t1.begin(receiveSignal, 325ns);
-  //biquad1.setLowpass(0, 18000, 0.707);
-  // biquad1.setBandpass(0, , 0,);
+
+  // Audio Filtering
+  biquad1.setLowpass(0, 14000, 0.707);
+  //biquad1.setBandpass(0, 18000, 0.707);
+  //biquad1.setHighpass(0, 500, 0.707);
+  //biquad1.setNotch(0, 000, 0.707);
 
   // I2C Initialization
   

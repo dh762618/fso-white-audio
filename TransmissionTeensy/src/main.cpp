@@ -105,7 +105,7 @@ void setup() {
   amp1.gain(gain);
   
   // Implement filter
-  // biquad1.setLowpass(0, 10000, 0.707);
+  biquad1.setLowpass(0, 10000, 0.707);
 
   // Initialize the seesaw neopixel slider
   if (!seesaw.begin(DEFAULT_I2C_ADDR)) {
@@ -138,9 +138,9 @@ void setup() {
   // SPI Setup Code
   pinMode(featherPin, OUTPUT);
   pinMode(teensyPin, INPUT);
-  SPI.begin();
-  SPI.setMOSI();
-  SPI.setMISO();
+  //SPI.begin();
+  //SPI.setMOSI();
+  //SPI.setMISO();
 
   // Test code that pulses 1s and 0s repeatedly at ~50 kHz
   //t1.begin(callback, 156.25ns);
