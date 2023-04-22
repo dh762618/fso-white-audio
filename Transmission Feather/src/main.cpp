@@ -89,7 +89,7 @@ void loop() {
 
   // if transaction is completed by Teensy
   while (slave.available()){
-    slider_val = spi_slave_rx_buf;
+    slider_val = spi_slave_rx_buf[0];
     slave.pop();
   }
 
