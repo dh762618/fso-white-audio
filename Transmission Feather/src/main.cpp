@@ -17,6 +17,13 @@
 Adafruit_MAX17048 battery;
 Adafruit_ST7789 display = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
+// SPI Slave Declarations
+ESP32SPISlave slave;
+
+static constexpr uint32_t BUFFER_SIZE {32};
+uint8_t spi_slave_tx_buf[BUFFER_SIZE];
+uint8_t spi_slave_rx_buf[BUFFER_SIZE];
+
 // global variable to determine if the device is "off" or not
 bool isOff = 0;
 int slider_val = 0;
@@ -67,16 +74,24 @@ void setup() {
   // Turn Teensy on
   digitalWrite(A0, HIGH);
 
-  // I2C Setup Code
-  Wire.begin(0x25);
-  Wire.onReceive(receiveSlider);
-  displayIntro();
-
+  // SPI Setup Code
+  slave.setDataMode(SPI_MODE0);
+  slave.begin(VSPI);
 }
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 void loop() {
-  // put your main code here, to run repeatedly:
+
+  // If there is no transaction in the queue, add it
+  if (slave.remained() == 0){
+    slave.queue(spi_slave_rx_buf, spi_slave_tx_buf, BUFFER_SIZE);
+  }
+
+  // if transaction is completed by Teensy
+  while (slave.available()){
+    slider_val = spi_slave_rx_buf;
+    slave.pop();
+  }
 
   // check if the power button is pressed
   powerManagement();
