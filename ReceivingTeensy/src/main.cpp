@@ -37,8 +37,10 @@ AudioInputI2S            i2s1;
 AudioAmplifier           amp1;           //xy=540,337
 AudioAmplifier           amp2;           //xy=572,378
 AudioOutputI2S           pt8211_1;       //xy=769,343
-AudioConnection          patchCord5(i2s1,0,amp1,0);
-AudioConnection          patchCord6(i2s1,0,amp2,0);
+AudioFilterBiquad        biquad1;
+AudioConnection          patchCord5(i2s1,0,biquad1,0);
+AudioConnection          patchCord6(biquad1,0,amp1,0);
+AudioConnection          patchCord7(biquad1,0,amp2,0);
 AudioConnection          patchCord1(spdifIn, 0, amp1, 0);
 AudioConnection          patchCord2(spdifIn, 0, amp2, 0);
 AudioConnection          patchCord3(amp1, 0, pt8211_1, 0);
@@ -108,6 +110,12 @@ void setup() {
 
   // Digital Read from Laser
   // t1.begin(receiveSignal, 325ns);
+  //biquad1.setLowpass(0, 18000, 0.707);
+  // biquad1.setBandpass(0, , 0,);
+
+  // I2C Initialization
+  
+  
 }
 
 void receiveSignal(){

@@ -31,6 +31,9 @@ TeensyTimerTool::PeriodicTimer t1(TeensyTimerTool::GPT2);
 
 // Global Variables
 int counter = 0; // Counter for test code
+int muted = 0;
+const int featherPin = 33;
+const int teensyPin = 37;
 
 // From Teensy Audio Library
 // GUItool: begin automatically generated code4
@@ -39,13 +42,13 @@ AudioInputI2S            i2s1;           //xy=200,69
 AudioOutputSPDIF3        spout1;
 AudioAmplifier           amp1;
 AudioOutputI2S           i2sOut;
-AudioOutputPWM           pwm1(36,37);
+//AudioOutputPWM           pwm1(36,37);
 AudioConnection          patchCord1(i2s1, 0, amp1, 0);
 AudioConnection          patchCord2(i2s1, 1, amp1, 1);
 //AudioConnection        patchCord3(amp1, 0, biquad1, 0);
 AudioConnection          patchCord7(amp1, 0, spout1, 0);
 AudioConnection          patchCord8(amp1, 0, i2sOut, 0);
-AudioConnection          patchCord9(amp1, 0, pwm1, 0);
+//AudioConnection          patchCord9(amp1, 0, pwm1, 0);
 AudioControlSGTL5000     sgtl5000_1;     //xy=302,184
 
 // GUItool: end automatically generated code
@@ -55,13 +58,15 @@ AudioControlSGTL5000     sgtl5000_1;     //xy=302,184
 // Declare that the input will constantly be read from the line in ports
 const int myInput = AUDIO_INPUT_LINEIN;
 
+// SPI Setup
+SPISettings settingsA(16000000, LSBFIRST, SPI_MODE0);
 
 // Declare neoslider function (taken from example)
 uint32_t Wheel(byte WheelPos);
-
 // Declare gain regulation function
 void GainRegulation(double gainValue);
 void callback();
+
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 void setup() {
@@ -130,10 +135,18 @@ void setup() {
   pixels.setBrightness(255);  // half bright
   pixels.show(); // Initialize all pixels to 'off'
 
+  // SPI Setup Code
+  pinMode(featherPin, OUTPUT);
+  pinMode(teensyPin, INPUT);
+  SPI.begin();
+  SPI.setMOSI();
+  SPI.setMISO();
+
   // Test code that pulses 1s and 0s repeatedly at ~50 kHz
   //t1.begin(callback, 156.25ns);
   pinMode(39, OUTPUT);
 }
+
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 // Input a value 0 to 255 to get a color value.
@@ -200,8 +213,15 @@ void callback(){
 /////////////////////////////////////////////////////////////////////////
 void loop() {
   // read the potentiometer
-  double slide_val = seesaw.analogRead(ANALOGIN);
+  float slide_val = seesaw.analogRead(ANALOGIN);
   Serial.println(slide_val);
+
+  SPI.beginTransaction(settingsA);
+  digitalWrite(featherPin, LOW);
+  SPI.transfer((int)slide_val);
+  digitalWrite(featherPin, HIGH);
+  muted = SPI.transfer(0);
+  SPI.endTransaction();
 
   for (uint8_t i=0; i< pixels.numPixels(); i++) {
     pixels.setPixelColor(i, Wheel(slide_val / 4));
@@ -242,7 +262,6 @@ void loop() {
   Serial.print("Voltage on 3.5mm PAD: ");
   Serial.println(headphonePad);
 
-  delay(50);
 }
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
