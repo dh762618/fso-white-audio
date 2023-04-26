@@ -32,7 +32,6 @@ seesaw_NeoPixel pixels = seesaw_NeoPixel(4, NEOPIXELOUT, NEO_GRB + NEO_KHZ800);
 
 // Teensy Audio Library
 // GUItool: begin automatically generated code
-AsyncAudioInputSPDIF3    spdifIn;   //xy=335,357
 AudioInputI2S            i2s1;
 AudioAmplifier           amp1;           //xy=540,337
 AudioAmplifier           amp2;           //xy=572,378
@@ -41,8 +40,6 @@ AudioFilterBiquad        biquad1;
 AudioConnection          patchCord5(i2s1,0,biquad1,0);
 AudioConnection          patchCord6(biquad1,0,amp1,0);
 AudioConnection          patchCord7(biquad1,0,amp2,0);
-AudioConnection          patchCord1(spdifIn, 0, amp1, 0);
-AudioConnection          patchCord2(spdifIn, 0, amp2, 0);
 AudioConnection          patchCord3(amp1, 0, pt8211_1, 0);
 AudioConnection          patchCord4(amp2, 0, pt8211_1, 1);
 AudioControlSGTL5000     sgtl5000_1;
@@ -115,14 +112,11 @@ void setup() {
   // t1.begin(receiveSignal, 325ns);
 
   // Audio Filtering
-  biquad1.setLowpass(0, 14000, 0.707);
+  biquad1.setLowpass(0, 10000, 0.707);
   //biquad1.setBandpass(0, 18000, 0.707);
-  //biquad1.setHighpass(0, 500, 0.707);
-  //biquad1.setNotch(0, 000, 0.707);
+  //biquad1.setHighpass(0, 2700, 0.707);
+  //biquad1.setNotch(1, 10000, 100);
 
-  // I2C Initialization
-  
-  
 }
 
 void receiveSignal(){
