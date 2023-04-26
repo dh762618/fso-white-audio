@@ -11,6 +11,8 @@
 #include <Audio.h>
 #include <Wire.h>
 #include <SPI.h>
+#include <ADC.h>
+#include <ADC_util.h>
 #include <SerialFlash.h>
 #include "Adafruit_seesaw.h"
 #include <seesaw_neopixel.h>
@@ -19,6 +21,14 @@
 #define  DEFAULT_I2C_ADDR 0x30
 #define  ANALOGIN   18
 #define  NEOPIXELOUT 14 
+
+// PAD LED Constants
+#define XLRCHECKIN 32
+#define XLRCHECKOUT 31
+#define XLRLEDOUT 30
+#define JACKLEDOUT 29
+#define JACKCHECKIN 33
+#define JACKCHECKOUT 34
 
 // Declaring the constructor for the NeoSlider gain
 Adafruit_seesaw seesaw;
@@ -31,35 +41,26 @@ TeensyTimerTool::PeriodicTimer t1(TeensyTimerTool::GPT2);
 
 // Global Variables
 int counter = 0; // Counter for test code
-int muted = 0;
-const int featherPin = 33;
-const int teensyPin = 37;
+int slideDisable = 0;
 
 // From Teensy Audio Library
 // GUItool: begin automatically generated code4
 AudioFilterBiquad        biquad1;
 AudioInputI2S            i2s1;           //xy=200,69
-AudioOutputSPDIF3        spout1;
 AudioAmplifier           amp1;
 AudioOutputI2S           i2sOut;
-//AudioOutputPWM           pwm1(36,37);
+// AudioOutputPWM           pwm1(37,38);
 AudioConnection          patchCord1(i2s1, 0, amp1, 0);
 AudioConnection          patchCord2(i2s1, 1, amp1, 1);
-//AudioConnection        patchCord3(amp1, 0, biquad1, 0);
-AudioConnection          patchCord7(amp1, 0, spout1, 0);
+AudioConnection          patchCord3(amp1, 0, biquad1, 0);
 AudioConnection          patchCord8(amp1, 0, i2sOut, 0);
-//AudioConnection          patchCord9(amp1, 0, pwm1, 0);
+// AudioConnection        patchCord9(amp1, 0, pwm1, 0);
 AudioControlSGTL5000     sgtl5000_1;     //xy=302,184
 
 // GUItool: end automatically generated code
 
-// possibly touch buttons for sound effects
-
 // Declare that the input will constantly be read from the line in ports
 const int myInput = AUDIO_INPUT_LINEIN;
-
-// SPI Setup
-SPISettings settingsA(16000000, LSBFIRST, SPI_MODE0);
 
 // Declare neoslider function (taken from example)
 uint32_t Wheel(byte WheelPos);
@@ -82,24 +83,23 @@ void setup() {
   pinMode(39, OUTPUT);
 
   // pin modes from PAD's
-  pinMode(26, INPUT); // 3.5 pad
-  pinMode(27, INPUT); // XLR pad
+  pinMode(JACKCHECKIN, INPUT); // 3.5 pad
+  pinMode(XLRCHECKIN, INPUT); // XLR pad
 
   // pin modes to LED's
-  pinMode(28, OUTPUT); // 3.5 LED
-  pinMode(29, OUTPUT); // XLR LED
+  pinMode(JACKLEDOUT, OUTPUT); // 3.5 LED
+  pinMode(XLRLEDOUT, OUTPUT); // XLR LED
 
   // pin modes to PAD status checking
-  pinMode(30, OUTPUT); // 3.5 pad
-  pinMode(31, OUTPUT); // XLR pad
+  pinMode(JACKCHECKOUT, OUTPUT); // 3.5 pad
+  pinMode(XLRCHECKOUT, OUTPUT); // XLR pad
 
   // Default Pin Values
-  digitalWrite(28, LOW);
-  digitalWrite(29, LOW);
-  digitalWrite(30, HIGH);
-  digitalWrite(31, HIGH);
-  
-  
+  digitalWrite(JACKLEDOUT, LOW);
+  digitalWrite(XLRLEDOUT, LOW);
+  digitalWrite(JACKCHECKOUT, HIGH);
+  digitalWrite(XLRCHECKOUT, HIGH);
+
   // set default gain
   int gain = 1;
   amp1.gain(gain);
@@ -135,12 +135,7 @@ void setup() {
   pixels.setBrightness(255);  // half bright
   pixels.show(); // Initialize all pixels to 'off'
 
-  // SPI Setup Code
-  pinMode(featherPin, OUTPUT);
-  pinMode(teensyPin, INPUT);
-  //SPI.begin();
-  //SPI.setMOSI();
-  //SPI.setMISO();
+  pinMode(41, INPUT);
 
   // Test code that pulses 1s and 0s repeatedly at ~50 kHz
   //t1.begin(callback, 156.25ns);
@@ -212,47 +207,46 @@ void callback(){
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
 void loop() {
+
   // read the potentiometer
   float slide_val = seesaw.analogRead(ANALOGIN);
   Serial.println(slide_val);
-
-  SPI.beginTransaction(settingsA);
-  digitalWrite(featherPin, LOW);
-  SPI.transfer((int)slide_val);
-  digitalWrite(featherPin, HIGH);
-  muted = SPI.transfer(0);
-  SPI.endTransaction();
 
   for (uint8_t i=0; i< pixels.numPixels(); i++) {
     pixels.setPixelColor(i, Wheel(slide_val / 4));
   }
   pixels.show();
-
-  //Update the gain
-  GainRegulation(slide_val);
-
+  if (digitalRead(41)){
+    slideDisable = !slideDisable;
+  }
+  if (slideDisable){
+    amp1.gain(1);
+  } else{
+    //Update the gain
+    GainRegulation(slide_val);
+  }
   // Read the voltage on the 'L' PAD from the 3.5mm headphone port to determine if it is on
   // Allows for LED indicator 
-  int headphonePad = digitalRead(26);
+  int headphonePad = digitalRead(JACKCHECKIN);
   Serial.print("Headphone Pad: ");
   Serial.println(headphonePad);
   // Check 3.5mm PAD voltage and change LED status
   if (headphonePad){
-    digitalWrite(28, HIGH);
+    digitalWrite(JACKLEDOUT, HIGH);
   } else{
-    digitalWrite(28, LOW);
+    digitalWrite(JACKLEDOUT, LOW);
   }
 
-  // Read the voltage on the 'L' PAD from the XLR port to determine if it is on
+  // Read the voltage on the                  'L' PAD from the XLR port to determine if it is on
   // Allows for LED indicator 
-  int xlrPad = digitalRead(27);
+  int xlrPad = digitalRead(XLRCHECKIN);
   Serial.print("XLR Pad: ");
   Serial.println(xlrPad);
   // Check XLR PAD voltage and change LED status
   if (xlrPad){
-    digitalWrite(29, HIGH);
+    digitalWrite(XLRLEDOUT, HIGH);
   } else{
-    digitalWrite(29, LOW);
+    digitalWrite(XLRLEDOUT, LOW);
   }
 
   // serial prints for debugging

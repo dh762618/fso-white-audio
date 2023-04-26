@@ -8,26 +8,20 @@
 #include <seesaw_neopixel.h>
 #include <SPI.h>
 #include <bitMap.h>
-#include <ESP32SPISlave.h>
 
 // definitions
 #define  d2 GPIO_NUM_2 // power button d2
+#define  d1 GPIO_NUM_1 // Mute button for slider
 
 // Declare Interfaces with Battery and Display
 Adafruit_MAX17048 battery;
 Adafruit_ST7789 display = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
-// SPI Slave Declarations
-ESP32SPISlave slave;
-
-static constexpr uint32_t BUFFER_SIZE {32};
-uint8_t spi_slave_tx_buf[BUFFER_SIZE];
-uint8_t spi_slave_rx_buf[BUFFER_SIZE];
-
 // global variable to determine if the device is "off" or not
 bool isOff = 0;
 int slider_val = 0;
 float prev_percent = 0;
+bool muted = 0;
 
 // Function declarations
 void displayIntro();
@@ -37,7 +31,6 @@ void receiveSlider(int slider_val);
 
 void setup() {
   Serial.begin(9600);
-
   display.setCursor(0,0);
 
   //Set up the battery that is connected to the feather
@@ -70,35 +63,30 @@ void setup() {
   pinMode(d2, INPUT_PULLDOWN); // Button D2
   pinMode(A0, OUTPUT); // Power switch detection
   pinMode(A0, OUTPUT); // Teensy Power
+  pinMode(GPIO_NUM_5, OUTPUT); // Mute
 
   // Turn Teensy on
   digitalWrite(A0, HIGH);
 
-  // SPI Setup Code
-  slave.setDataMode(SPI_MODE0);
-  slave.begin(VSPI);
+  displayIntro();
 }
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 void loop() {
 
-  // If there is no transaction in the queue, add it
-  if (slave.remained() == 0){
-    slave.queue(spi_slave_rx_buf, spi_slave_tx_buf, BUFFER_SIZE);
-  }
-
-  // if transaction is completed by Teensy
-  while (slave.available()){
-    slider_val = spi_slave_rx_buf[0];
-    slave.pop();
-  }
-
-  // check if the power button is pressed
   powerManagement();
   
   // Clear the battery percentage 
   if (battery.cellPercent() != prev_percent){
     display.fillRect(104, 15, 100, 15, ST77XX_BLACK);
+  }
+
+  if (digitalRead(d1)){
+    if (!muted){
+      digitalWrite(GPIO_NUM_5, HIGH);
+    } else{
+      digitalWrite(GPIO_NUM_5, LOW);
+    }
   }
 
   // output display
@@ -192,10 +180,6 @@ void printDisplay(){
   display.print(battery.cellPercent());
   display.println("%");
 
-  // Receive sliderVal from Teensy
-  while (Wire.available()){
-    slider_val = Wire.read();
-  }
 
   // display pre amp gain
   display.drawBitmap(45, 50, epd_bitmap_gain, 40, 40, ST77XX_WHITE);
