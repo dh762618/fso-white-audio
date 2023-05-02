@@ -37,16 +37,7 @@ void powerManagement();
 
 void setup() {
   Serial1.begin(9600);
-  // , SERIAL_8N1, GPIO_NUM_2, GPIO_NUM_1);
-  //, false, 20000UL, (uint8_t)112U)
-
-  //TeensyComms.setRX(GPIO_NUM_7);
-  //TeensyComms.setTX(GPIO_NUM_8);
-
-  // pinMode(2, INPUT);
-  // pinMode(1, OUTPUT); 
-
-
+  
   //Set up the battery that is connected to the feather
   if (!battery.begin()) {
     Serial.println("Couldnt find Adafruit MAX17048?\nMake sure a battery is plugged in!");

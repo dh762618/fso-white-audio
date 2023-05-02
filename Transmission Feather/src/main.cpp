@@ -27,7 +27,6 @@ bool muted = 0;
 void displayIntro();
 void printDisplay();
 void powerManagement();
-void receiveSlider(int slider_val);
 
 void setup() {
   Serial.begin(9600);
@@ -146,10 +145,6 @@ void displayIntro()
 }
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-
-void receiveSlider(int data){
-  slider_val = data;
-}
 
 void printDisplay(){
   // Battery management
