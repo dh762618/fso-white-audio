@@ -16,6 +16,7 @@ The receiver will decode this data and send the output audio to a connected spea
 ## Pictures of Final Implementation
 - Transmission Box
 <img src="imagefiles\transmission.jpg" alt="Transmission Box" width="281">
+
 - Receiver Box
 <img src="imagefiles\receiving.jpg" alt="Receiver Box" width="288">
 
