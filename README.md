@@ -3,9 +3,9 @@ Repo for the FSO White Capstone group - all source code for the project will be 
 
 ## Team
 - Main Software Lead: Devin Holt
-GitHubID: dh762618
+  - GitHubID: dh762618
 - Software Support and Managerial Lead: Daniel Cobb
-GitHubID: dcobb013
+  - GitHubID: dcobb013
 - Hardware Engineers: Carson Magni and Remi Fordyce
 
 ## Project Description
