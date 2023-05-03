@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-05-03T05:24:13.979Z" agent="5.0 (Windows)" etag="I3MOID7NUqkJnfEbmep9" version="21.0.8" type="github">
+<mxfile host="app.diagrams.net" modified="2023-05-03T05:25:08.186Z" agent="5.0 (Windows)" etag="SNGI2XjsIcBOL7l4szP1" version="21.0.8" type="github">
   <diagram name="Page-1" id="liBwoiML4cwXRpIKLvov">
     <mxGraphModel dx="1434" dy="1854" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -72,6 +72,11 @@
         <mxCell id="USZkDxPFcDaXGZcoZMEg-21" value="display.setTextColor(ST77XX_GREEN)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="70" y="370" width="220" height="60" as="geometry" />
         </mxCell>
+        <mxCell id="0jrQYETAcGc584x3XMYe-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="USZkDxPFcDaXGZcoZMEg-23">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="USZkDxPFcDaXGZcoZMEg-23" value="Draw Battery Bitmap" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="340" y="370" width="120" height="60" as="geometry" />
         </mxCell>
@@ -89,6 +94,9 @@
         </mxCell>
         <mxCell id="USZkDxPFcDaXGZcoZMEg-28" value="display.setTextColor(ST77XX_GREEN)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="480" y="370" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="0jrQYETAcGc584x3XMYe-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="USZkDxPFcDaXGZcoZMEg-29" target="USZkDxPFcDaXGZcoZMEg-31">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="USZkDxPFcDaXGZcoZMEg-29" value="Draw Battery Bitmap" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="750" y="370" width="120" height="60" as="geometry" />
