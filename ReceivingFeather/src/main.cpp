@@ -138,7 +138,9 @@ void loop() {
   powerManagement();
   // Check to see if mute button is pressed
   if (digitalRead(d1)){
-    isMuted = !isMuted;
+    isMuted = 1;
+  } else{
+    isMuted = 0;
   }
   // Send mute status to Teensy so it mutes the audio
   if (isMuted){
