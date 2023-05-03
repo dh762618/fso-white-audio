@@ -1,0 +1,31 @@
+<mxfile host="app.diagrams.net" modified="2023-05-03T04:16:41.205Z" agent="5.0 (Windows)" etag="-i_K33Dwl3JlNywdA4S_" version="21.0.8" type="github">
+  <diagram name="Page-1" id="9q5l-I0lzyNRf3L8rV2m">
+    <mxGraphModel dx="1434" dy="754" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="P__lul0VBT7VDBWAXxhc-3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="P__lul0VBT7VDBWAXxhc-1" target="P__lul0VBT7VDBWAXxhc-2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="P__lul0VBT7VDBWAXxhc-1" value="&lt;div&gt;GainRegulation(double gainValue)&lt;/div&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="30" y="10" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="P__lul0VBT7VDBWAXxhc-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="P__lul0VBT7VDBWAXxhc-2" target="P__lul0VBT7VDBWAXxhc-4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="P__lul0VBT7VDBWAXxhc-2" value="double actualGain = gainValue + 1" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="10" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="P__lul0VBT7VDBWAXxhc-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="P__lul0VBT7VDBWAXxhc-4" target="P__lul0VBT7VDBWAXxhc-6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="P__lul0VBT7VDBWAXxhc-4" value="amp1.gain(actualGain)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="360" y="10" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="P__lul0VBT7VDBWAXxhc-6" value="return" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="520" y="10" width="100" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
