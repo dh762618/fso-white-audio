@@ -1,9 +1,62 @@
-<mxfile host="app.diagrams.net" modified="2023-05-03T18:58:48.345Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/112.0" version="21.2.2" etag="A3rUpLMAfWjzigdkC4g-" type="github">
+<mxfile host="app.diagrams.net" modified="2023-05-03T19:02:31.532Z" agent="Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/112.0" etag="lCz9mXmQOarIfUdE_3JD" version="21.2.2" type="github">
   <diagram name="Page-1" id="gj-DVEs_ze3BTRQBn8eG">
-    <mxGraphModel>
+    <mxGraphModel dx="714" dy="1819" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="cTXCmFEHxateNh-LMNgV-3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="cTXCmFEHxateNh-LMNgV-1" target="cTXCmFEHxateNh-LMNgV-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cTXCmFEHxateNh-LMNgV-1" value="loop()" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="30" y="20" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cTXCmFEHxateNh-LMNgV-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="cTXCmFEHxateNh-LMNgV-2" target="cTXCmFEHxateNh-LMNgV-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cTXCmFEHxateNh-LMNgV-2" value="int slide_val = seesaw.analogRead(ANALOGIN)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="180" y="20" width="190" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cTXCmFEHxateNh-LMNgV-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="cTXCmFEHxateNh-LMNgV-4" target="cTXCmFEHxateNh-LMNgV-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cTXCmFEHxateNh-LMNgV-4" value="sendVolume(slide_val / 1023.0)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="20" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cTXCmFEHxateNh-LMNgV-9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="cTXCmFEHxateNh-LMNgV-6" target="cTXCmFEHxateNh-LMNgV-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cTXCmFEHxateNh-LMNgV-6" value="for (uint8_t i = 0; i&amp;lt; pixels.numPixels(); i++)" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="590" y="-20" width="140" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="cTXCmFEHxateNh-LMNgV-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="cTXCmFEHxateNh-LMNgV-8">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="560" y="50" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cTXCmFEHxateNh-LMNgV-8" value="pixels.setPixelColor(i, Wheel(slide_val / 4))" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="160" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cTXCmFEHxateNh-LMNgV-13" value="T" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="625" y="118" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="cTXCmFEHxateNh-LMNgV-14" value="F" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="715" y="8" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="cTXCmFEHxateNh-LMNgV-17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="cTXCmFEHxateNh-LMNgV-15" target="cTXCmFEHxateNh-LMNgV-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cTXCmFEHxateNh-LMNgV-15" value="pixels.show()" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="290" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cTXCmFEHxateNh-LMNgV-19" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="cTXCmFEHxateNh-LMNgV-16" target="cTXCmFEHxateNh-LMNgV-18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cTXCmFEHxateNh-LMNgV-16" value="CheckVolume(slide_val)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="290" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cTXCmFEHxateNh-LMNgV-18" value="return" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="400" y="290" width="100" height="60" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
