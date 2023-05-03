@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-05-03T05:30:45.420Z" agent="5.0 (Windows)" etag="n_NYLx2yxbCkzbNEaaDV" version="21.0.8" type="github">
+<mxfile host="app.diagrams.net" modified="2023-05-03T05:31:02.623Z" agent="5.0 (Windows)" etag="lozeb8MIJ26zDaswwRIs" version="21.0.8" type="github">
   <diagram name="Page-1" id="yVD-WOLmMo0ubDYrJGTC">
     <mxGraphModel dx="1434" dy="1854" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -82,6 +82,15 @@
         <mxCell id="4br-h4eIcfAJUuowmVf3-24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="4br-h4eIcfAJUuowmVf3-26" target="4br-h4eIcfAJUuowmVf3-28">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="4br-h4eIcfAJUuowmVf3-53" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="4br-h4eIcfAJUuowmVf3-26" target="4br-h4eIcfAJUuowmVf3-40">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="900" y="280" />
+              <mxPoint x="900" y="460" />
+              <mxPoint x="80" y="460" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
         <mxCell id="4br-h4eIcfAJUuowmVf3-26" value="&lt;font style=&quot;font-size: 11px;&quot;&gt;else if (battery.cellPercent() &amp;lt; 60 &amp;amp;&amp;amp; battery.cellPercent &amp;gt; 20)&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" vertex="1" parent="1">
           <mxGeometry x="510" y="230" width="100" height="100" as="geometry" />
         </mxCell>
@@ -90,6 +99,11 @@
         </mxCell>
         <mxCell id="4br-h4eIcfAJUuowmVf3-28" value="display.setTextColor(ST77XX_GREEN)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="480" y="370" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4br-h4eIcfAJUuowmVf3-54" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="4br-h4eIcfAJUuowmVf3-29">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="900" y="400" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="4br-h4eIcfAJUuowmVf3-29" value="Draw Battery Bitmap" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="750" y="370" width="120" height="60" as="geometry" />
