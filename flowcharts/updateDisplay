@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-05-03T05:27:12.801Z" agent="5.0 (Windows)" etag="6pYZMDSqoACqr0MKQPgL" version="21.0.8" type="github">
+<mxfile host="app.diagrams.net" modified="2023-05-03T05:28:22.514Z" agent="5.0 (Windows)" etag="Iius52I9ues_kJax1ufS" version="21.0.8" type="github">
   <diagram name="Page-1" id="liBwoiML4cwXRpIKLvov">
     <mxGraphModel dx="1434" dy="1854" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -82,9 +82,6 @@
         <mxCell id="USZkDxPFcDaXGZcoZMEg-30" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="USZkDxPFcDaXGZcoZMEg-25" target="USZkDxPFcDaXGZcoZMEg-28" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="USZkDxPFcDaXGZcoZMEg-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="USZkDxPFcDaXGZcoZMEg-25" target="USZkDxPFcDaXGZcoZMEg-31" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
         <mxCell id="USZkDxPFcDaXGZcoZMEg-25" value="&lt;font style=&quot;font-size: 11px;&quot;&gt;else if (battery.cellPercent() &amp;gt;= 50&lt;/font&gt;)" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="510" y="230" width="100" height="100" as="geometry" />
         </mxCell>
@@ -94,20 +91,13 @@
         <mxCell id="USZkDxPFcDaXGZcoZMEg-28" value="display.setTextColor(ST77XX_GREEN)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="480" y="370" width="220" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="0jrQYETAcGc584x3XMYe-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="USZkDxPFcDaXGZcoZMEg-29" target="USZkDxPFcDaXGZcoZMEg-31">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="0jrQYETAcGc584x3XMYe-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="USZkDxPFcDaXGZcoZMEg-29">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="910" y="400" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="USZkDxPFcDaXGZcoZMEg-29" value="Draw Battery Bitmap" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="750" y="370" width="120" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="USZkDxPFcDaXGZcoZMEg-31" value="B" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
-          <mxGeometry x="750" y="240" width="80" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="USZkDxPFcDaXGZcoZMEg-35" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="USZkDxPFcDaXGZcoZMEg-33" target="USZkDxPFcDaXGZcoZMEg-34" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="USZkDxPFcDaXGZcoZMEg-33" value="B" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
-          <mxGeometry x="30" y="480" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="USZkDxPFcDaXGZcoZMEg-37" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="USZkDxPFcDaXGZcoZMEg-34" target="USZkDxPFcDaXGZcoZMEg-36" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -143,7 +133,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="USZkDxPFcDaXGZcoZMEg-44" value="display.setCursor(104,15)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="340" y="490" width="120" height="60" as="geometry" />
+          <mxGeometry x="320" y="490" width="160" height="60" as="geometry" />
         </mxCell>
         <mxCell id="USZkDxPFcDaXGZcoZMEg-49" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="USZkDxPFcDaXGZcoZMEg-46" target="USZkDxPFcDaXGZcoZMEg-48" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -211,6 +201,14 @@
         <mxCell id="USZkDxPFcDaXGZcoZMEg-66" value="F" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
           <mxGeometry x="705" y="738" width="30" height="30" as="geometry" />
         </mxCell>
+        <mxCell id="0jrQYETAcGc584x3XMYe-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="USZkDxPFcDaXGZcoZMEg-67" target="USZkDxPFcDaXGZcoZMEg-69">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="810" y="960" />
+              <mxPoint x="220" y="960" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
         <mxCell id="USZkDxPFcDaXGZcoZMEg-67" value="Draw volume unmuted and set text to white" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="750" y="740" width="120" height="60" as="geometry" />
         </mxCell>
@@ -240,6 +238,16 @@
         </mxCell>
         <mxCell id="USZkDxPFcDaXGZcoZMEg-76" value="return" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="800" y="990" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="0jrQYETAcGc584x3XMYe-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="0jrQYETAcGc584x3XMYe-5" target="USZkDxPFcDaXGZcoZMEg-34">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="910" y="280" />
+              <mxPoint x="910" y="460" />
+              <mxPoint x="150" y="460" />
+              <mxPoint x="150" y="520" />
+            </Array>
+          </mxGeometry>
         </mxCell>
         <mxCell id="0jrQYETAcGc584x3XMYe-5" value="&lt;font style=&quot;font-size: 11px;&quot;&gt;else if (battery.cellPercent() &amp;lt; 60 &amp;amp;&amp;amp; battery.cellPercent &amp;gt; 20)&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" vertex="1" parent="1">
           <mxGeometry x="510" y="230" width="100" height="100" as="geometry" />
