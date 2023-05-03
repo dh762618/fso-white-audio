@@ -27,7 +27,6 @@ bool muted = 0;
 void displayIntro();
 void printDisplay();
 void powerManagement();
-void receiveSlider(int slider_val);
 
 void setup() {
   Serial.begin(9600);
@@ -60,8 +59,7 @@ void setup() {
   display.setTextSize(2);
 
   // Pin Mode Configuration
-  pinMode(d2, INPUT_PULLDOWN); // Button D2
-  pinMode(A0, OUTPUT); // Power switch detection
+  pinMode(d2, INPUT_PULLDOWN); // Power switch detection
   pinMode(A0, OUTPUT); // Teensy Power
   pinMode(GPIO_NUM_5, OUTPUT); // Mute
 
@@ -146,10 +144,6 @@ void displayIntro()
 }
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
-
-void receiveSlider(int data){
-  slider_val = data;
-}
 
 void printDisplay(){
   // Battery management

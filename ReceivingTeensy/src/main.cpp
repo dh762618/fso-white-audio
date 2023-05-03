@@ -23,7 +23,6 @@
 #define  NEOPIXELOUT 14
 
 // Global Vars
-FASTRUN float voltage = 0;
 TeensyTimerTool::PeriodicTimer t1(TeensyTimerTool::GPT2);
 
 // Declaring Constructor for NeoSlider
