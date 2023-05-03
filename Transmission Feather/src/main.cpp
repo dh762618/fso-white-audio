@@ -168,8 +168,8 @@ void printDisplay(){
     display.setTextColor(ST77XX_GREEN);
     display.drawBitmap(40, 0, epd_bitmap_battery, 64, 40, ST77XX_GREEN);
   } 
-  // if the battery is between 20-60% change the battery and text to yellow
-  else if (battery.cellPercent() < 60 && battery.cellPercent() > 20)
+  // if the battery is between 20-50% change the battery and text to yellow
+  else if (battery.cellPercent() < 50 && battery.cellPercent() > 20)
   {
     display.setTextColor(ST77XX_YELLOW);
     display.drawBitmap(40, 0, epd_bitmap_battery, 64, 40, ST77XX_YELLOW);
